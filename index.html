@@ -3,197 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Arena</title>
-    <!-- Подключаем Tailwind CSS для красивого дизайна -->
+    <title>Crypto Arena Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body class="bg-slate-950 text-white font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-black">
+<body class="bg-slate-950 text-white font-sans antialiased pb-20">
 
-    <!-- ВЕРХНЯЯ ПАНЕЛЬ (Профиль и Баланс) -->
+    <!-- Шапка профиля -->
     <header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
         <div>
-            <div id="user-level" class="text-xs text-amber-400 font-semibold uppercase tracking-wider">Хомяк-новичок</div>
-            <div class="text-lg font-bold flex items-center gap-1">
-                <span id="user-balance">1000.00</span> <span class="text-xs text-slate-400">USDT</span>
-            </div>
+            <span id="user-level" class="text-xs px-2 py-1 bg-amber-500/20 text-amber-400 rounded-full font-semibold">Хомяк-новичок</span>
+            <h1 id="username" class="text-lg font-bold mt-1">Трейдер</h1>
         </div>
-        <div class="flex items-center gap-3">
-            <!-- Переключатель языка -->
-            <button onclick="toggleLanguage()" id="lang-btn" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg text-xs font-bold border border-slate-700 transition">
-                RU
-            </button>
-            <div class="text-right">
-                <div id="user-xp" class="text-xs text-slate-400">0 XP</div>
-            </div>
+        <div class="text-right">
+            <div class="text-xs text-slate-400">Баланс</div>
+            <div class="text-lg font-black text-emerald-400"><span id="user-balance">1000.00</span> USDT</div>
         </div>
     </header>
 
-    <!-- ОСНОВНОЙ КОНТЕНТ -->
-    <main class="flex-1 p-4 overflow-y-auto pb-20">
+    <!-- Основной контент -->
+    <main class="p-4 max-w-md mx-auto">
         
-        <!-- Вкладка 1: Биржа (Рынок) -->
-        <div id="tab-market" class="space-y-4">
-            <h2 id="txt-market-title" class="text-xl font-extrabold tracking-tight">Биржа монет</h2>
-            <div id="tokens-list" class="space-y-3">
-                <!-- Сюда динамически загружаются монеты -->
-                <div class="text-center text-slate-500 py-10">Загрузка рынка...</div>
+        <!-- Вкладка 1: Биржа и Рынок -->
+        <section id="tab-market" class="space-y-4">
+            <h2 class="text-xl font-bold">📈 Живой рынок</h2>
+            <div id="crypto-list" class="space-y-3">
+                <!-- Динамически заполняется через JS -->
+                <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 animate-pulse">Загрузка котировок...</div>
             </div>
-        </div>
+        </section>
 
-        <!-- Вкладка 2: Лидеры -->
-        <div id="tab-leaderboard" class="space-y-4 hidden">
-            <h2 id="txt-lb-title" class="text-xl font-extrabold tracking-tight">Топ трейдеров (Глобал)</h2>
-            <div id="leaderboard-list" class="space-y-2">
-                <!-- Сюда загружается топ -->
-                <div class="text-center text-slate-500 py-10">Загрузка лидеров...</div>
+        <!-- Вкладка 2: Арена прогнозов (Сделки) -->
+        <section id="tab-arena" class="space-y-4 hidden">
+            <h2 class="text-xl font-bold">⚡ Предикшн-Арена</h2>
+            <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-4">
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Актив:</span>
+                    <span class="font-bold text-cyan-400">Bitcoin (BTC/USD)</span>
+                </div>
+                <div>
+                    <label class="text-sm text-slate-400">Сумма ставки (USDT):</label>
+                    <input type="number" id="bet-amount" value="100" class="w-full mt-1 p-3 bg-slate-800 rounded-xl border border-slate-700 text-white font-bold focus:outline-none focus:border-cyan-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button onclick="makeTrade('up')" class="p-4 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl transition shadow-lg shadow-emerald-900/40">🟢 Рост (LONG)</button>
+                    <button onclick="makeTrade('down')" class="p-4 bg-rose-600 hover:bg-rose-500 font-bold rounded-xl transition shadow-lg shadow-rose-900/40">🔴 Падение (SHORT)</button>
+                </div>
+                <div id="trade-result" class="text-center text-sm font-medium mt-2 text-slate-400"></div>
             </div>
-        </div>
+        </section>
+
+        <!-- Вкладка 3: Лидеры -->
+        <section id="tab-leaderboard" class="space-y-4 hidden">
+            <h2 class="text-xl font-bold">🏆 Топ Трейдеров</h2>
+            <div id="leaderboard-list" class="space-y-2">
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center text-slate-400">Загрузка рейтинга...</div>
+            </div>
+        </section>
 
     </main>
 
-    <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-slate-950/90 backdrop-blur border-t border-slate-800 flex justify-around p-3 z-50">
-        <button onclick="switchTab('market')" id="nav-market" class="flex flex-col items-center text-amber-400 font-medium text-xs transition">
-            <span class="text-lg">📈</span>
-            <span id="lbl-market">Биржа</span>
-        </button>
-        <button onclick="switchTab('leaderboard')" id="nav-lb" class="flex flex-col items-center text-slate-400 font-medium text-xs transition">
-            <span class="text-lg">🏆</span>
-            <span id="lbl-lb">Лидеры</span>
-        </button>
+    <!-- Нижняя навигация -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur border-t border-slate-800 flex justify-around p-3">
+        <button onclick="switchTab('market')" class="nav-btn text-cyan-400 font-bold text-sm">📊 Биржа</button>
+        <button onclick="switchTab('arena')" class="nav-btn text-slate-400 text-sm">⚡ Арена</button>
+        <button onclick="switchTab('leaderboard')" class="nav-btn text-slate-400 text-sm">🏆 Лидеры</button>
     </nav>
 
-    <!-- СКРИПТЫ ЛОГИКИ И ПЕРЕВОДОВ -->
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        // Определяем Telegram ID пользователя (или тестовый, если открыто в обычном браузере)
-        const user = tg.initDataUnsafe?.user;
-        const telegramId = user ? String(user.id) : "test_user_123";
-        let currentLang = user?.language_code === 'ru' ? 'ru' : 'en';
-
-        // Словари переводов (RU / EN)
-        const translations = {
-            ru: { market: "Биржа монет", leaderboard: "Топ трейдеров", buy: "Купить", navMarket: "Биржа", navLb: "Лидеры" },
-            en: { market: "Token Exchange", leaderboard: "Leaderboard", buy: "Buy", navMarket: "Market", navLb: "Leaderboard" }
-        };
-
-        function updateTexts() {
-            document.getElementById('lang-btn').innerText = currentLang.toUpperCase();
-            document.getElementById('txt-market-title').innerText = translations[currentLang].market;
-            document.getElementById('txt-lb-title').innerText = translations[currentLang].leaderboard;
-            document.getElementById('lbl-market').innerText = translations[currentLang].navMarket;
-            document.getElementById('lbl-lb').innerText = translations[currentLang].navLb;
-        }
-
-        function toggleLanguage() {
-            currentLang = currentLang === 'ru' ? 'en' : 'ru';
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-            updateTexts();
-            loadTokens();
-        }
-
-        function switchTab(tab) {
-            if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-            
-            const isMarket = tab === 'market';
-            document.getElementById('tab-market').classList.toggle('hidden', !isMarket);
-            document.getElementById('tab-leaderboard').classList.toggle('hidden', isMarket);
-
-            document.getElementById('nav-market').className = isMarket ? "flex flex-col items-center text-amber-400 font-medium text-xs transition" : "flex flex-col items-center text-slate-400 font-medium text-xs transition";
-            document.getElementById('nav-lb').className = !isMarket ? "flex flex-col items-center text-amber-400 font-medium text-xs transition" : "flex flex-col items-center text-slate-400 font-medium text-xs transition";
-
-            if (!isMarket) loadLeaderboard();
-        }
+        const API_URL = "https://prediction-arena-backend.onrender.com"; // Замени на свой бэкенд URL
+        const telegramId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id?.toString() || "test_user_123";
 
         // Загрузка данных пользователя
-        async function loadUserData() {
+        async function loadUser() {
             try {
-                const res = await fetch(`/api/user/${telegramId}`);
-                const data = await res.json();
-                document.getElementById('user-balance').innerText = data.balance.toFixed(2);
-                document.getElementById('user-xp').innerText = `${data.xp} XP`;
-                document.getElementById('user-level').innerText = data.level;
-                if (data.language) currentLang = data.language;
-                updateTexts();
-            } catch (e) {
-                console.error("Ошибка загрузки профиля", e);
-            }
+                let res = await fetch(`${API_URL}/api/user/${telegramId}`);
+                let user = await res.json();
+                document.getElementById('user-balance').innerText = user.balance.toFixed(2);
+                document.getElementById('user-level').innerText = user.level;
+                document.getElementById('username').innerText = user.username;
+            } catch (e) { console.error(e); }
         }
 
-        // Загрузка списка монет с бэкенда
-        async function loadTokens() {
+        // Загрузка рыночных цен
+        async function loadMarket() {
             try {
-                const res = await fetch('/api/tokens');
-                const tokens = await res.json();
-                const container = document.getElementById('tokens-list');
-                container.innerHTML = "";
-
-                tokens.forEach(token => {
-                    const isPositive = token.change_24h >= 0;
-                    const changeColor = isPositive ? 'text-emerald-400' : 'text-rose-400';
-                    const changeSign = isPositive ? '+' : '';
-
+                let res = await fetch(`${API_URL}/api/market`);
+                let data = await res.json();
+                let container = document.getElementById('crypto-list');
+                container.innerHTML = '';
+                for (let [coin, info] of Object.entries(data)) {
+                    let changeColor = info.change >= 0 ? 'text-emerald-400' : 'text-rose-400';
                     container.innerHTML += `
-                        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl flex items-center justify-between shadow-sm">
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center">
                             <div>
-                                <div class="font-bold text-sm flex items-center gap-2">
-                                    ${token.symbol} 
-                                    <span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-normal">${token.name}</span>
-                                </div>
-                                <div class="text-xs text-slate-400 mt-0.5">$${token.price.toFixed(4)}</div>
+                                <span class="font-bold text-lg">${coin}</span>
+                                <div class="text-xs text-slate-400">Spot Market</div>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <div class="text-right">
-                                    <div class="text-xs font-semibold ${changeColor}">${changeSign}${token.change_24h}%</div>
-                                </div>
-                                <button onclick="alert('Покупка ${token.symbol} в разработке!')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg transition active:scale-95">
-                                    ${translations[currentLang].buy}
-                                </button>
+                            <div class="text-right">
+                                <div class="font-bold">$${info.price.toLocaleString()}</div>
+                                <div class="text-xs ${changeColor}">${info.change > 0 ? '+' : ''}${info.change}%</div>
                             </div>
                         </div>
                     `;
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        // Сделка
+        async function makeTrade(direction) {
+            let amount = parseFloat(document.getElementById('bet-amount').value);
+            let resultDiv = document.getElementById('trade-result');
+            resultDiv.innerText = "⏳ Идет обработка сделки на бирже...";
+            try {
+                let res = await fetch(`${API_URL}/api/trade`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ telegram_id: telegramId, amount: amount, direction: direction })
                 });
+                let data = await res.json();
+                if (res.ok) {
+                    resultDiv.innerText = data.message;
+                    resultDiv.className = data.success ? "text-center text-sm font-bold mt-2 text-emerald-400" : "text-center text-sm font-bold mt-2 text-rose-400";
+                    loadUser();
+                } else {
+                    resultDiv.innerText = data.detail || "Ошибка сделки";
+                }
             } catch (e) {
-                console.error("Ошибка загрузки монет", e);
+                resultDiv.innerText = "Ошибка соединения с бэкендом";
             }
         }
 
-        // Загрузка таблицы лидеров
+        // Таблица лидеров
         async function loadLeaderboard() {
             try {
-                const res = await fetch('/api/leaderboard');
-                const users = await res.json();
-                const container = document.getElementById('leaderboard-list');
-                container.innerHTML = "";
-
-                users.forEach((u, index) => {
+                let res = await fetch(`${API_URL}/api/leaderboard`);
+                let leaders = await res.json();
+                let container = document.getElementById('leaderboard-list');
+                container.innerHTML = '';
+                leaders.forEach((u, index) => {
                     container.innerHTML += `
-                        <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="font-bold text-slate-500 w-5">#${index + 1}</span>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center">
+                            <div class="flex items-center space-x-3">
+                                <span class="font-bold text-amber-400">#${index + 1}</span>
                                 <div>
-                                    <div class="font-semibold text-sm">${u.username}</div>
-                                    <div class="text-[10px] text-amber-400">${u.level}</div>
+                                    <div class="font-semibold">${u.username}</div>
+                                    <div class="text-xs text-slate-400">${u.level}</div>
                                 </div>
                             </div>
-                            <div class="text-xs font-bold text-slate-300">${u.xp} XP</div>
+                            <div class="font-bold text-emerald-400">${u.balance.toFixed(0)} USDT</div>
                         </div>
                     `;
                 });
-            } catch (e) {
-                console.error("Ошибка загрузки таблицы лидеров", e);
-            }
+            } catch (e) { console.error(e); }
+        }
+
+        // Переключение вкладок
+        function switchTab(tab) {
+            document.getElementById('tab-market').classList.add('hidden');
+            document.getElementById('tab-arena').classList.add('hidden');
+            document.getElementById('tab-leaderboard').classList.add('hidden');
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-cyan-400', 'text-slate-400'));
+            event.target.classList.replace('text-slate-400', 'text-cyan-400');
+
+            if(tab === 'market') loadMarket();
+            if(tab === 'leaderboard') loadLeaderboard();
         }
 
         // Инициализация при старте
-        loadUserData();
-        loadTokens();
-        // Автообновление цен на рынке каждые 7 секунд
-        setInterval(loadTokens, 7000);
+        loadUser();
+        loadMarket();
+        setInterval(loadMarket, 10000); // Обновление цен каждые 10 сек
     </script>
 </body>
 </html>
