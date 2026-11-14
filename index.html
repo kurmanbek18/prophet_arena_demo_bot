@@ -1,229 +1,544 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prediction Arena</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Prediction Arena | Ultimate Web3 Experience</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg-color: #0f172a;
-      --card-bg: rgba(30, 41, 59, 0.7);
-      --accent-green: #10b981;
-      --accent-red: #ef4444;
-      --accent-blue: #3b82f6;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg: #090d16;
+      --card-bg: #131d2f;
+      --card-border: #1e293b;
+      --accent: #00f2fe;
+      --accent-purple: #7928ca;
+      --neon-glow: rgba(0, 242, 254, 0.2);
+      --green: #10b981;
+      --red: #ef4444;
+      --text: #f8fafc;
+      --text-muted: #64748b;
+      --gold: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     body {
-      margin: 0;
-      padding: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      user-select: none;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 90px;
+      overflow-x: hidden;
     }
 
-    .header {
+    /* Header */
+    header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #60a5fa, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .lang-switch {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: var(--text-main);
-      padding: 6px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .balance-card {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(168, 85, 247, 0.2));
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px 20px;
+      background: rgba(19, 29, 47, 0.8);
       backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 16px;
-      text-align: center;
-      margin-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .balance-title {
-      font-size: 13px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .balance-amount {
-      font-size: 32px;
-      font-weight: 800;
-      margin-top: 4px;
-      color: #fff;
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      box-shadow: 0 0 15px var(--neon-glow);
     }
 
-    .section-title {
-      font-size: 16px;
+    .user-info h4 {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .user-info span {
+      font-size: 11px;
+      color: var(--accent);
+      background: rgba(0, 242, 254, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .balance-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 8px 14px;
+      border-radius: 20px;
       font-weight: 700;
-      margin-bottom: 12px;
+      font-size: 16px;
+      color: var(--gold);
     }
 
+    /* Main Container */
+    .container {
+      padding: 20px;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Cards */
     .card {
       background: var(--card-bg);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 16px;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
       margin-bottom: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
     }
 
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 8px;
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
     }
 
-    .card-timer {
-      font-size: 12px;
-      color: var(--accent-blue);
-      margin-bottom: 16px;
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .btn-group {
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      color: #090d16;
+      box-shadow: 0 4px 20px rgba(0, 242, 254, 0.3);
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    .btn-red {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    /* Grid for choices */
+    .bet-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
+      margin-top: 15px;
     }
 
-    .btn-vote {
-      border: none;
-      padding: 12px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 14px;
+    /* Mining / Tapper Tab */
+    .mining-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .energy-bar-container {
+      width: 100%;
+      background: var(--card-border);
+      border-radius: 10px;
+      height: 12px;
+      margin: 20px 0;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .energy-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00f2fe, #7928ca);
+      width: 100%;
+      transition: width 0.3s;
+    }
+
+    .coin-target {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffdf00 0%, #f59e0b 70%, #b45309 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+      box-shadow: 0 0 50px rgba(245, 158, 11, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.5);
       cursor: pointer;
-      transition: transform 0.1s ease, opacity 0.2s ease;
-      color: #fff;
+      user-select: none;
+      transition: transform 0.1s;
+      margin: 20px 0;
     }
 
-    .btn-vote:active {
-      transform: scale(0.96);
+    .coin-target:active {
+      transform: scale(0.92);
     }
 
-    .btn-yes {
-      background: linear-gradient(135deg, #10b981, #059669);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    /* Floating +1 numbers */
+    .floating-number {
+      position: absolute;
+      font-weight: bold;
+      font-size: 24px;
+      color: var(--gold);
+      animation: floatUp 0.8s ease-out forwards;
+      pointer-events: none;
     }
 
-    .btn-no {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-60px) scale(1.4); }
+    }
+
+    /* Navbar */
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 75px;
+      background: rgba(19, 29, 47, 0.95);
+      backdrop-filter: blur(15px);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1000;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+    }
+
+    .nav-icon {
+      font-size: 22px;
+    }
+
+    /* Leaderboard item */
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      border: 1px solid var(--card-border);
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="logo">PROPHET ARENA</div>
-    <button class="lang-switch" id="langBtn" onclick="toggleLanguage()">EN</button>
-  </div>
-
-  <div class="balance-card">
-    <div class="balance-title" id="lblBalance">Мой баланс</div>
-    <div class="balance-amount">1,000 PTS</div>
-  </div>
-
-  <div class="section-title" id="lblActive">Горячие предсказания 🔥</div>
-
-  <!-- Карточка 1 -->
-  <div class="card">
-    <div class="card-title" id="q1">Превысит ли Bitcoin отметку $100,000 до конца недели?</div>
-    <div class="card-timer" id="t1">⏱ Окончание через 2 дня</div>
-    <div class="btn-group">
-      <button class="btn-vote btn-yes" onclick="makePrediction('Bitcoin > 100k', 'YES')" id="btnYes1">ДА (x1.85)</button>
-      <button class="btn-vote btn-no" onclick="makePrediction('Bitcoin > 100k', 'NO')" id="btnNo1">НЕТ (x2.10)</button>
+  <header>
+    <div class="user-profile">
+      <div class="avatar" id="user-avatar">P</div>
+      <div class="user-info">
+        <h4 id="user-name">Player</h4>
+        <span>VIP Arena Member</span>
+      </div>
     </div>
+    <div class="balance-badge">
+      🪙 <span id="balance">5000</span>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- TAB 1: ARENA -->
+    <div id="tab-arena" class="tab-content active">
+      <h2>🔥 Топовые Прогнозы</h2>
+      
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-size:12px; margin-bottom:8px;">
+          <span>⚡️ Крипто Маркет</span>
+          <span style="color:var(--accent);">Пул: 45,200 PTS</span>
+        </div>
+        <h3 style="font-size: 18px; margin-bottom: 10px;">BTC прорвет уровень $100,000 в этом месяце?</h3>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Множитель победы: <b style="color:var(--gold);">x1.95</b></p>
+        
+        <div class="bet-grid">
+          <button class="btn btn-green" onclick="placeBet('BTC_UP', 100)">РОСТ 🚀</button>
+          <button class="btn btn-red" onclick="placeBet('BTC_DOWN', 100)">ПАДЕНИЕ 📉</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-size:12px; margin-bottom:8px;">
+          <span>🌐 Технологии</span>
+          <span style="color:var(--accent);">Пул: 12,800 PTS</span>
+        </div>
+        <h3 style="font-size: 18px; margin-bottom: 10px;">Выйдет ли Apple Vision Pro 2 в текущем году?</h3>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Множитель победы: <b style="color:var(--gold);">x2.40</b></p>
+        
+        <div class="bet-grid">
+          <button class="btn btn-green" onclick="placeBet('APPLE_YES', 100)">ДА ✅</button>
+          <button class="btn btn-red" onclick="placeBet('APPLE_NO', 100)">НЕТ ❌</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: MINING -->
+    <div id="tab-tap" class="tab-content">
+      <h2>⚡️ Квантовый Майнинг</h2>
+      <div class="mining-container">
+        <p style="color: var.text-muted; font-size: 14px;">Тапай по ядру, чтобы генерировать монеты</p>
+        
+        <div class="coin-target" id="coin" onclick="tapCoin(event)">
+          💎
+        </div>
+
+        <div style="width: 100%; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px;">
+          <span>⚡ Энергия</span>
+          <span id="energy-text">1000 / 1000</span>
+        </div>
+        <div class="energy-bar-container">
+          <div class="energy-fill" id="energy-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: LEADERBOARD -->
+    <div id="tab-leaderboard" class="tab-content">
+      <h2>🏆 Зал Славы (Топ)</h2>
+      <div class="leaderboard-item" style="border-color: var(--gold);">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:20px;">🥇</span>
+          <div>
+            <b>Satoshi_N</b>
+            <div style="font-size:11px; color:var(--text-muted);">Прибыль: +340,000 PTS</div>
+          </div>
+        </div>
+        <span style="color:var(--gold); font-weight:bold;">340K 🪙</span>
+      </div>
+      <div class="leaderboard-item">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:20px;">🥈</span>
+          <div>
+            <b>CryptoKing</b>
+            <div style="font-size:11px; color:var(--text-muted);">Прибыль: +210,000 PTS</div>
+          </div>
+        </div>
+        <span style="color:var(--text); font-weight:bold;">210K 🪙</span>
+      </div>
+      <div class="leaderboard-item">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:20px;">🥉</span>
+          <div>
+            <b>Aibek_Dev</b>
+            <div style="font-size:11px; color:var(--text-muted);">Прибыль: +150,000 PTS</div>
+          </div>
+        </div>
+        <span style="color:var(--text); font-weight:bold;">150K 🪙</span>
+      </div>
+    </div>
+
+    <!-- TAB 4: FRIENDS -->
+    <div id="tab-friends" class="tab-content">
+      <h2>👥 Партнерская сеть</h2>
+      <div class="card" style="text-align: center; padding: 30px 20px;">
+        <h3 style="margin-bottom: 10px;">Приглашай друзей и богатей</h3>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Получай <b>1,000 PTS</b> за каждого активного игрока + 10% от его выигрышей!</p>
+        <button class="btn btn-primary" onclick="shareRefLink()">🚀 ПОДЕЛИТЬСЯ ССЫЛКОЙ</button>
+      </div>
+    </div>
+
+    <!-- TAB 5: WALLET -->
+    <div id="tab-wallet" class="tab-content">
+      <h2>💎 Инвестиции и Вывод</h2>
+      <div class="card">
+        <h3>Ускоритель x2 Майнинга</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 8px 0 15px;">Удваивает получаемые монеты при клике на 24 часа.</p>
+        <button class="btn btn-primary" onclick="buyBoost()">Купить за ⭐️ 50 Stars</button>
+      </div>
+      <div class="card" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2);">
+        <h3>Вывод на TON / Web3 Кошелек</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 8px 0;">Доступно от 100,000 PTS. Интеграция с TON Connect.</p>
+        <button class="btn btn-green" onclick="alert('Кошелек успешно подключен!')">🔗 Подключить TON Wallet</button>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Карточка 2 -->
-  <div class="card">
-    <div class="card-title" id="q2">Выйдет ли новое обновление Telegram Mini Apps в этом месяце?</div>
-    <div class="card-timer" id="t2">⏱ Окончание через 5 дней</div>
-    <div class="btn-group">
-      <button class="btn-vote btn-yes" onclick="makePrediction('Telegram Update', 'YES')" id="btnYes2">ДА (x1.50)</button>
-      <button class="btn-vote btn-no" onclick="makePrediction('Telegram Update', 'NO')" id="btnNo2">НЕТ (x2.60)</button>
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="nav-item active" onclick="switchTab('arena', this)">
+      <div class="nav-icon">⚔️</div>Арена
     </div>
-  </div>
+    <div class="nav-item" onclick="switchTab('tap', this)">
+      <div class="nav-icon">⚡️</div>Майнинг
+    </div>
+    <div class="nav-item" onclick="switchTab('leaderboard', this)">
+      <div class="nav-icon">🏆</div>Топ
+    </div>
+    <div class="nav-item" onclick="switchTab('friends', this)">
+      <div class="nav-icon">👥</div>Друзья
+    </div>
+    <div class="nav-item" onclick="switchTab('wallet', this)">
+      <div class="nav-icon">💎</div>Кошелек
+    </div>
+  </nav>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    let currentLang = 'ru';
+    // User Data init
+    let balance = parseInt(localStorage.getItem('arena_balance')) || 5000;
+    let energy = 1000;
+    const maxEnergy = 1000;
 
-    const translations = {
-      ru: {
-        balance: "Мой баланс",
-        active: "Горячие предсказания 🔥",
-        q1: "Превысит ли Bitcoin отметку $100,000 до конца недели?",
-        t1: "⏱ Окончание через 2 дня",
-        q2: "Выйдет ли новое обновление Telegram Mini Apps в этом месяце?",
-        t2: "⏱ Окончание через 5 дней",
-        yes: "ДА",
-        no: "НЕТ"
-      },
-      en: {
-        balance: "My Balance",
-        active: "Hot Predictions 🔥",
-        q1: "Will Bitcoin exceed $100,000 by the end of the week?",
-        t1: "⏱ Ends in 2 days",
-        q2: "Will a new Telegram Mini Apps update be released this month?",
-        t2: "⏱ Ends in 5 days",
-        yes: "YES",
-        no: "NO"
-      }
-    };
+    document.getElementById('balance').innerText = balance;
 
-    function toggleLanguage() {
-      currentLang = currentLang === 'ru' ? 'en' : 'ru';
-      document.getElementById('langBtn').innerText = currentLang === 'ru' ? 'EN' : 'RU';
-      
-      const t = translations[currentLang];
-      document.getElementById('lblBalance').innerText = t.balance;
-      document.getElementById('lblActive').innerText = t.active;
-      document.getElementById('q1').innerText = t.q1;
-      document.getElementById('t1').innerText = t.t1;
-      document.getElementById('q2').innerText = t.q2;
-      document.getElementById('t2').innerText = t.t2;
-
-      document.getElementById('btnYes1').innerText = `${t.yes} (x1.85)`;
-      document.getElementById('btnNo1').innerText = `${t.no} (x2.10)`;
-      document.getElementById('btnYes2').innerText = `${t.yes} (x1.50)`;
-      document.getElementById('btnNo2').innerText = `${t.no} (x2.60)`;
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      const user = tg.initDataUnsafe.user;
+      document.getElementById('user-name').innerText = user.first_name;
+      document.getElementById('user-avatar').innerText = user.first_name.charAt(0).toUpperCase();
     }
 
-    function makePrediction(eventTitle, choice) {
-      const payload = {
-        event: eventTitle,
-        choice: choice,
-        amount: 100
-      };
+    function saveBalance() {
+      localStorage.setItem('arena_balance', balance);
+      document.getElementById('balance').innerText = balance;
+    }
+
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      el.classList.add('active');
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    // Tapper logic with floating animation
+    function tapCoin(event) {
+      if (energy <= 0) return;
+      energy -= 10;
+      balance += 10;
+      saveBalance();
+      updateEnergyUI();
+
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+      // Floating text effect
+      const rect = event.target.getBoundingClientRect();
+      const x = event.clientX || (rect.left + rect.width / 2);
+      const y = event.clientY || (rect.top + rect.height / 2);
+
+      const el = document.createElement('div');
+      el.className = 'floating-number';
+      el.innerText = '+10';
+      el.style.left = `${x - 15}px`;
+      el.style.top = `${y - 25}px`;
+      document.body.appendChild(el);
+
+      setTimeout(() => el.remove(), 800);
+    }
+
+    // Restore energy over time
+    setInterval(() => {
+      if (energy < maxEnergy) {
+        energy = Math.min(maxEnergy, energy + 5);
+        updateEnergyUI();
+      }
+    }, 1000);
+
+    function updateEnergyUI() {
+      document.getElementById('energy-text').innerText = `${energy} / ${maxEnergy}`;
+      document.getElementById('energy-bar').style.width = `${(energy / maxEnergy) * 100}%`;
+    }
+
+    function placeBet(choice, amount) {
+      if (balance < amount) {
+        alert('Недостаточно средств на балансе!');
+        return;
+      }
+      balance -= amount;
+      saveBalance();
       
-      // Отправляем данные обратно боту
-      tg.sendData(JSON.stringify(payload));
+      const payload = JSON.stringify({ action: 'bet', choice: choice, amount: amount });
+      tg.sendData(payload);
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      alert('Ставка успешно принята системой!');
+    }
+
+    function shareRefLink() {
+      const botName = "PredictionArenaBot"; // Укажи юзернейм своего бота
+      const userId = tg.initDataUnsafe?.user?.id || '12345';
+      const refLink = `https://t.me/${botName}?start=ref_${userId}`;
+      navigator.clipboard.writeText(refLink);
+      alert('Реферальная ссылка скопирована в буфер обмена!');
+    }
+
+    function buyBoost() {
+      const payload = JSON.stringify({ action: 'buy_boost', item: 'x2_mining' });
+      tg.sendData(payload);
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
   </script>
 </body>
