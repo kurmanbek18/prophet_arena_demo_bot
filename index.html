@@ -1,545 +1,199 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Prediction Arena | Ultimate Web3 Experience</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    :root {
-      --bg: #090d16;
-      --card-bg: #131d2f;
-      --card-border: #1e293b;
-      --accent: #00f2fe;
-      --accent-purple: #7928ca;
-      --neon-glow: rgba(0, 242, 254, 0.2);
-      --green: #10b981;
-      --red: #ef4444;
-      --text: #f8fafc;
-      --text-muted: #64748b;
-      --gold: #f59e0b;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding-bottom: 90px;
-      overflow-x: hidden;
-    }
-
-    /* Header */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      background: rgba(19, 29, 47, 0.8);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--card-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 18px;
-      box-shadow: 0 0 15px var(--neon-glow);
-    }
-
-    .user-info h4 {
-      font-size: 14px;
-      color: var(--text);
-    }
-
-    .user-info span {
-      font-size: 11px;
-      color: var(--accent);
-      background: rgba(0, 242, 254, 0.1);
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-
-    .balance-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--gold);
-    }
-
-    /* Main Container */
-    .container {
-      padding: 20px;
-    }
-
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    h2 {
-      font-size: 22px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Cards */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    }
-
-    /* Buttons */
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 14px;
-      font-weight: 700;
-      font-size: 16px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .btn:active {
-      transform: scale(0.97);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #00f2fe, #4facfe);
-      color: #090d16;
-      box-shadow: 0 4px 20px rgba(0, 242, 254, 0.3);
-    }
-
-    .btn-green {
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: white;
-    }
-
-    .btn-red {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      color: white;
-    }
-
-    /* Grid for choices */
-    .bet-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 15px;
-    }
-
-    /* Mining / Tapper Tab */
-    .mining-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px 0;
-    }
-
-    .energy-bar-container {
-      width: 100%;
-      background: var(--card-border);
-      border-radius: 10px;
-      height: 12px;
-      margin: 20px 0;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .energy-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #00f2fe, #7928ca);
-      width: 100%;
-      transition: width 0.3s;
-    }
-
-    .coin-target {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #ffdf00 0%, #f59e0b 70%, #b45309 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 80px;
-      box-shadow: 0 0 50px rgba(245, 158, 11, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.5);
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.1s;
-      margin: 20px 0;
-    }
-
-    .coin-target:active {
-      transform: scale(0.92);
-    }
-
-    /* Floating +1 numbers */
-    .floating-number {
-      position: absolute;
-      font-weight: bold;
-      font-size: 24px;
-      color: var(--gold);
-      animation: floatUp 0.8s ease-out forwards;
-      pointer-events: none;
-    }
-
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-60px) scale(1.4); }
-    }
-
-    /* Navbar */
-    nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 75px;
-      background: rgba(19, 29, 47, 0.95);
-      backdrop-filter: blur(15px);
-      border-top: 1px solid var(--card-border);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 1000;
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    .nav-item.active {
-      color: var(--accent);
-    }
-
-    .nav-icon {
-      font-size: 22px;
-    }
-
-    /* Leaderboard item */
-    .leaderboard-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.02);
-      border-radius: 12px;
-      margin-bottom: 8px;
-      border: 1px solid var(--card-border);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Arena</title>
+    <!-- Подключаем Tailwind CSS для красивого дизайна -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body>
+<body class="bg-slate-950 text-white font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-black">
 
-  <header>
-    <div class="user-profile">
-      <div class="avatar" id="user-avatar">P</div>
-      <div class="user-info">
-        <h4 id="user-name">Player</h4>
-        <span>VIP Arena Member</span>
-      </div>
-    </div>
-    <div class="balance-badge">
-      🪙 <span id="balance">5000</span>
-    </div>
-  </header>
-
-  <div class="container">
-    
-    <!-- TAB 1: ARENA -->
-    <div id="tab-arena" class="tab-content active">
-      <h2>🔥 Топовые Прогнозы</h2>
-      
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-size:12px; margin-bottom:8px;">
-          <span>⚡️ Крипто Маркет</span>
-          <span style="color:var(--accent);">Пул: 45,200 PTS</span>
+    <!-- ВЕРХНЯЯ ПАНЕЛЬ (Профиль и Баланс) -->
+    <header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
+        <div>
+            <div id="user-level" class="text-xs text-amber-400 font-semibold uppercase tracking-wider">Хомяк-новичок</div>
+            <div class="text-lg font-bold flex items-center gap-1">
+                <span id="user-balance">1000.00</span> <span class="text-xs text-slate-400">USDT</span>
+            </div>
         </div>
-        <h3 style="font-size: 18px; margin-bottom: 10px;">BTC прорвет уровень $100,000 в этом месяце?</h3>
-        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Множитель победы: <b style="color:var(--gold);">x1.95</b></p>
+        <div class="flex items-center gap-3">
+            <!-- Переключатель языка -->
+            <button onclick="toggleLanguage()" id="lang-btn" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg text-xs font-bold border border-slate-700 transition">
+                RU
+            </button>
+            <div class="text-right">
+                <div id="user-xp" class="text-xs text-slate-400">0 XP</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <main class="flex-1 p-4 overflow-y-auto pb-20">
         
-        <div class="bet-grid">
-          <button class="btn btn-green" onclick="placeBet('BTC_UP', 100)">РОСТ 🚀</button>
-          <button class="btn btn-red" onclick="placeBet('BTC_DOWN', 100)">ПАДЕНИЕ 📉</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-size:12px; margin-bottom:8px;">
-          <span>🌐 Технологии</span>
-          <span style="color:var(--accent);">Пул: 12,800 PTS</span>
-        </div>
-        <h3 style="font-size: 18px; margin-bottom: 10px;">Выйдет ли Apple Vision Pro 2 в текущем году?</h3>
-        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Множитель победы: <b style="color:var(--gold);">x2.40</b></p>
-        
-        <div class="bet-grid">
-          <button class="btn btn-green" onclick="placeBet('APPLE_YES', 100)">ДА ✅</button>
-          <button class="btn btn-red" onclick="placeBet('APPLE_NO', 100)">НЕТ ❌</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 2: MINING -->
-    <div id="tab-tap" class="tab-content">
-      <h2>⚡️ Квантовый Майнинг</h2>
-      <div class="mining-container">
-        <p style="color: var.text-muted; font-size: 14px;">Тапай по ядру, чтобы генерировать монеты</p>
-        
-        <div class="coin-target" id="coin" onclick="tapCoin(event)">
-          💎
+        <!-- Вкладка 1: Биржа (Рынок) -->
+        <div id="tab-market" class="space-y-4">
+            <h2 id="txt-market-title" class="text-xl font-extrabold tracking-tight">Биржа монет</h2>
+            <div id="tokens-list" class="space-y-3">
+                <!-- Сюда динамически загружаются монеты -->
+                <div class="text-center text-slate-500 py-10">Загрузка рынка...</div>
+            </div>
         </div>
 
-        <div style="width: 100%; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px;">
-          <span>⚡ Энергия</span>
-          <span id="energy-text">1000 / 1000</span>
+        <!-- Вкладка 2: Лидеры -->
+        <div id="tab-leaderboard" class="space-y-4 hidden">
+            <h2 id="txt-lb-title" class="text-xl font-extrabold tracking-tight">Топ трейдеров (Глобал)</h2>
+            <div id="leaderboard-list" class="space-y-2">
+                <!-- Сюда загружается топ -->
+                <div class="text-center text-slate-500 py-10">Загрузка лидеров...</div>
+            </div>
         </div>
-        <div class="energy-bar-container">
-          <div class="energy-fill" id="energy-bar"></div>
-        </div>
-      </div>
-    </div>
 
-    <!-- TAB 3: LEADERBOARD -->
-    <div id="tab-leaderboard" class="tab-content">
-      <h2>🏆 Зал Славы (Топ)</h2>
-      <div class="leaderboard-item" style="border-color: var(--gold);">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-size:20px;">🥇</span>
-          <div>
-            <b>Satoshi_N</b>
-            <div style="font-size:11px; color:var(--text-muted);">Прибыль: +340,000 PTS</div>
-          </div>
-        </div>
-        <span style="color:var(--gold); font-weight:bold;">340K 🪙</span>
-      </div>
-      <div class="leaderboard-item">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-size:20px;">🥈</span>
-          <div>
-            <b>CryptoKing</b>
-            <div style="font-size:11px; color:var(--text-muted);">Прибыль: +210,000 PTS</div>
-          </div>
-        </div>
-        <span style="color:var(--text); font-weight:bold;">210K 🪙</span>
-      </div>
-      <div class="leaderboard-item">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-size:20px;">🥉</span>
-          <div>
-            <b>Aibek_Dev</b>
-            <div style="font-size:11px; color:var(--text-muted);">Прибыль: +150,000 PTS</div>
-          </div>
-        </div>
-        <span style="color:var(--text); font-weight:bold;">150K 🪙</span>
-      </div>
-    </div>
+    </main>
 
-    <!-- TAB 4: FRIENDS -->
-    <div id="tab-friends" class="tab-content">
-      <h2>👥 Партнерская сеть</h2>
-      <div class="card" style="text-align: center; padding: 30px 20px;">
-        <h3 style="margin-bottom: 10px;">Приглашай друзей и богатей</h3>
-        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Получай <b>1,000 PTS</b> за каждого активного игрока + 10% от его выигрышей!</p>
-        <button class="btn btn-primary" onclick="shareRefLink()">🚀 ПОДЕЛИТЬСЯ ССЫЛКОЙ</button>
-      </div>
-    </div>
+    <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-slate-950/90 backdrop-blur border-t border-slate-800 flex justify-around p-3 z-50">
+        <button onclick="switchTab('market')" id="nav-market" class="flex flex-col items-center text-amber-400 font-medium text-xs transition">
+            <span class="text-lg">📈</span>
+            <span id="lbl-market">Биржа</span>
+        </button>
+        <button onclick="switchTab('leaderboard')" id="nav-lb" class="flex flex-col items-center text-slate-400 font-medium text-xs transition">
+            <span class="text-lg">🏆</span>
+            <span id="lbl-lb">Лидеры</span>
+        </button>
+    </nav>
 
-    <!-- TAB 5: WALLET -->
-    <div id="tab-wallet" class="tab-content">
-      <h2>💎 Инвестиции и Вывод</h2>
-      <div class="card">
-        <h3>Ускоритель x2 Майнинга</h3>
-        <p style="color: var(--text-muted); font-size: 13px; margin: 8px 0 15px;">Удваивает получаемые монеты при клике на 24 часа.</p>
-        <button class="btn btn-primary" onclick="buyBoost()">Купить за ⭐️ 50 Stars</button>
-      </div>
-      <div class="card" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2);">
-        <h3>Вывод на TON / Web3 Кошелек</h3>
-        <p style="color: var(--text-muted); font-size: 13px; margin: 8px 0;">Доступно от 100,000 PTS. Интеграция с TON Connect.</p>
-        <button class="btn btn-green" onclick="alert('Кошелек успешно подключен!')">🔗 Подключить TON Wallet</button>
-      </div>
-    </div>
+    <!-- СКРИПТЫ ЛОГИКИ И ПЕРЕВОДОВ -->
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-  </div>
+        // Определяем Telegram ID пользователя (или тестовый, если открыто в обычном браузере)
+        const user = tg.initDataUnsafe?.user;
+        const telegramId = user ? String(user.id) : "test_user_123";
+        let currentLang = user?.language_code === 'ru' ? 'ru' : 'en';
 
-  <!-- NAVIGATION -->
-  <nav>
-    <div class="nav-item active" onclick="switchTab('arena', this)">
-      <div class="nav-icon">⚔️</div>Арена
-    </div>
-    <div class="nav-item" onclick="switchTab('tap', this)">
-      <div class="nav-icon">⚡️</div>Майнинг
-    </div>
-    <div class="nav-item" onclick="switchTab('leaderboard', this)">
-      <div class="nav-icon">🏆</div>Топ
-    </div>
-    <div class="nav-item" onclick="switchTab('friends', this)">
-      <div class="nav-icon">👥</div>Друзья
-    </div>
-    <div class="nav-item" onclick="switchTab('wallet', this)">
-      <div class="nav-icon">💎</div>Кошелек
-    </div>
-  </nav>
+        // Словари переводов (RU / EN)
+        const translations = {
+            ru: { market: "Биржа монет", leaderboard: "Топ трейдеров", buy: "Купить", navMarket: "Биржа", navLb: "Лидеры" },
+            en: { market: "Token Exchange", leaderboard: "Leaderboard", buy: "Buy", navMarket: "Market", navLb: "Leaderboard" }
+        };
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+        function updateTexts() {
+            document.getElementById('lang-btn').innerText = currentLang.toUpperCase();
+            document.getElementById('txt-market-title').innerText = translations[currentLang].market;
+            document.getElementById('txt-lb-title').innerText = translations[currentLang].leaderboard;
+            document.getElementById('lbl-market').innerText = translations[currentLang].navMarket;
+            document.getElementById('lbl-lb').innerText = translations[currentLang].navLb;
+        }
 
-    // User Data init
-    let balance = parseInt(localStorage.getItem('arena_balance')) || 5000;
-    let energy = 1000;
-    const maxEnergy = 1000;
+        function toggleLanguage() {
+            currentLang = currentLang === 'ru' ? 'en' : 'ru';
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            updateTexts();
+            loadTokens();
+        }
 
-    document.getElementById('balance').innerText = balance;
+        function switchTab(tab) {
+            if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+            
+            const isMarket = tab === 'market';
+            document.getElementById('tab-market').classList.toggle('hidden', !isMarket);
+            document.getElementById('tab-leaderboard').classList.toggle('hidden', isMarket);
 
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-      const user = tg.initDataUnsafe.user;
-      document.getElementById('user-name').innerText = user.first_name;
-      document.getElementById('user-avatar').innerText = user.first_name.charAt(0).toUpperCase();
-    }
+            document.getElementById('nav-market').className = isMarket ? "flex flex-col items-center text-amber-400 font-medium text-xs transition" : "flex flex-col items-center text-slate-400 font-medium text-xs transition";
+            document.getElementById('nav-lb').className = !isMarket ? "flex flex-col items-center text-amber-400 font-medium text-xs transition" : "flex flex-col items-center text-slate-400 font-medium text-xs transition";
 
-    function saveBalance() {
-      localStorage.setItem('arena_balance', balance);
-      document.getElementById('balance').innerText = balance;
-    }
+            if (!isMarket) loadLeaderboard();
+        }
 
-    function switchTab(tabId, el) {
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.getElementById('tab-' + tabId).classList.add('active');
-      el.classList.add('active');
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    }
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            try {
+                const res = await fetch(`/api/user/${telegramId}`);
+                const data = await res.json();
+                document.getElementById('user-balance').innerText = data.balance.toFixed(2);
+                document.getElementById('user-xp').innerText = `${data.xp} XP`;
+                document.getElementById('user-level').innerText = data.level;
+                if (data.language) currentLang = data.language;
+                updateTexts();
+            } catch (e) {
+                console.error("Ошибка загрузки профиля", e);
+            }
+        }
 
-    // Tapper logic with floating animation
-    function tapCoin(event) {
-      if (energy <= 0) return;
-      energy -= 10;
-      balance += 10;
-      saveBalance();
-      updateEnergyUI();
+        // Загрузка списка монет с бэкенда
+        async function loadTokens() {
+            try {
+                const res = await fetch('/api/tokens');
+                const tokens = await res.json();
+                const container = document.getElementById('tokens-list');
+                container.innerHTML = "";
 
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                tokens.forEach(token => {
+                    const isPositive = token.change_24h >= 0;
+                    const changeColor = isPositive ? 'text-emerald-400' : 'text-rose-400';
+                    const changeSign = isPositive ? '+' : '';
 
-      // Floating text effect
-      const rect = event.target.getBoundingClientRect();
-      const x = event.clientX || (rect.left + rect.width / 2);
-      const y = event.clientY || (rect.top + rect.height / 2);
+                    container.innerHTML += `
+                        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl flex items-center justify-between shadow-sm">
+                            <div>
+                                <div class="font-bold text-sm flex items-center gap-2">
+                                    ${token.symbol} 
+                                    <span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-normal">${token.name}</span>
+                                </div>
+                                <div class="text-xs text-slate-400 mt-0.5">$${token.price.toFixed(4)}</div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="text-right">
+                                    <div class="text-xs font-semibold ${changeColor}">${changeSign}${token.change_24h}%</div>
+                                </div>
+                                <button onclick="alert('Покупка ${token.symbol} в разработке!')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg transition active:scale-95">
+                                    ${translations[currentLang].buy}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                console.error("Ошибка загрузки монет", e);
+            }
+        }
 
-      const el = document.createElement('div');
-      el.className = 'floating-number';
-      el.innerText = '+10';
-      el.style.left = `${x - 15}px`;
-      el.style.top = `${y - 25}px`;
-      document.body.appendChild(el);
+        // Загрузка таблицы лидеров
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch('/api/leaderboard');
+                const users = await res.json();
+                const container = document.getElementById('leaderboard-list');
+                container.innerHTML = "";
 
-      setTimeout(() => el.remove(), 800);
-    }
+                users.forEach((u, index) => {
+                    container.innerHTML += `
+                        <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold text-slate-500 w-5">#${index + 1}</span>
+                                <div>
+                                    <div class="font-semibold text-sm">${u.username}</div>
+                                    <div class="text-[10px] text-amber-400">${u.level}</div>
+                                </div>
+                            </div>
+                            <div class="text-xs font-bold text-slate-300">${u.xp} XP</div>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                console.error("Ошибка загрузки таблицы лидеров", e);
+            }
+        }
 
-    // Restore energy over time
-    setInterval(() => {
-      if (energy < maxEnergy) {
-        energy = Math.min(maxEnergy, energy + 5);
-        updateEnergyUI();
-      }
-    }, 1000);
-
-    function updateEnergyUI() {
-      document.getElementById('energy-text').innerText = `${energy} / ${maxEnergy}`;
-      document.getElementById('energy-bar').style.width = `${(energy / maxEnergy) * 100}%`;
-    }
-
-    function placeBet(choice, amount) {
-      if (balance < amount) {
-        alert('Недостаточно средств на балансе!');
-        return;
-      }
-      balance -= amount;
-      saveBalance();
-      
-      const payload = JSON.stringify({ action: 'bet', choice: choice, amount: amount });
-      tg.sendData(payload);
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      alert('Ставка успешно принята системой!');
-    }
-
-    function shareRefLink() {
-      const botName = "PredictionArenaBot"; // Укажи юзернейм своего бота
-      const userId = tg.initDataUnsafe?.user?.id || '12345';
-      const refLink = `https://t.me/${botName}?start=ref_${userId}`;
-      navigator.clipboard.writeText(refLink);
-      alert('Реферальная ссылка скопирована в буфер обмена!');
-    }
-
-    function buyBoost() {
-      const payload = JSON.stringify({ action: 'buy_boost', item: 'x2_mining' });
-      tg.sendData(payload);
-      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    }
-  </script>
+        // Инициализация при старте
+        loadUserData();
+        loadTokens();
+        // Автообновление цен на рынке каждые 7 секунд
+        setInterval(loadTokens, 7000);
+    </script>
 </body>
 </html>
