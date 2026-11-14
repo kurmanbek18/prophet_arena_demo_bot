@@ -3,109 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Arena Ultimate Pro</title>
+    <title>Crypto Arena Pro Ultimate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-slate-950 text-white font-sans antialiased pb-24">
 
-    <!-- Шапка профиля -->
-    <header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
+    <header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center shadow-lg">
         <div>
-            <span id="user-level" class="text-xs px-2 py-1 bg-amber-500/20 text-amber-400 rounded-full font-semibold">Хомяк-новичок Академии</span>
+            <span id="user-level" class="text-xs px-2.5 py-1 bg-cyan-500/20 text-cyan-400 rounded-full font-bold">Элитный Трейдер</span>
             <div class="flex items-center gap-2 mt-1">
                 <h1 id="username" class="text-lg font-bold">Трейдер</h1>
                 <button onclick="changeName()" class="text-xs bg-slate-800 px-2 py-0.5 rounded text-cyan-400 hover:bg-slate-700">✏️</button>
             </div>
         </div>
         <div class="text-right">
-            <div class="text-xs text-slate-400">Баланс</div>
+            <div class="text-xs text-slate-400">Баланс кошелька</div>
             <div class="text-lg font-black text-emerald-400"><span id="user-balance">1000.00</span> USDT</div>
         </div>
     </header>
 
-    <!-- Основной контент -->
-    <main class="p-4 max-w-md mx-auto">
+    <main class="p-4 max-w-md mx-auto space-y-4">
         
-        <!-- Вкладка 1: Рынок и История монеты -->
+        <!-- Рынок и Графики -->
         <section id="tab-market" class="space-y-4">
-            <div class="p-3 bg-cyan-950/40 border border-cyan-800/50 rounded-xl text-xs text-cyan-300">
-                💡 <b>Академия трейдинга:</b> Нажмите на любую монету ниже, чтобы изучить ее рыночную историю и тренды!
-            </div>
-            <h2 class="text-xl font-bold">📈 Живой рынок и История</h2>
+            <h2 class="text-xl font-bold flex items-center gap-2">📈 Живой Рынок и Аналитика</h2>
             <div id="crypto-list" class="space-y-3">
-                <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 animate-pulse">Загрузка котировок...</div>
+                <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 animate-pulse text-center">Загрузка котировок...</div>
+            </div>
+
+            <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3 shadow-xl">
+                <div class="flex justify-between items-center">
+                    <h3 id="chart-title" class="font-bold text-cyan-400 text-sm">График BTC/USD</h3>
+                    <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Live Feed</span>
+                </div>
+                <div class="relative h-52">
+                    <canvas id="cryptoChart"></canvas>
+                </div>
+                <p id="coin-desc" class="text-xs text-slate-400 leading-relaxed">Нажмите на любой актив в списке выше, чтобы загрузить его персональный график и историю торгов.</p>
+            </div>
+        </section>
+
+        <!-- Дуэли -->
+        <section id="tab-duels" class="space-y-4 hidden">
+            <h2 class="text-xl font-bold flex items-center gap-2">⚔️ PvP Арена Дуэлей</h2>
+            <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3 shadow-xl">
+                <h3 class="font-semibold text-cyan-400 text-sm">Создать вызов трейдеру</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="duel-coin" class="p-3 bg-slate-800 rounded-xl border border-slate-700 text-sm font-bold text-white">
+                        <option value="BTC">Bitcoin (BTC)</option>
+                        <option value="ETH">Ethereum (ETH)</option>
+                        <option value="SOL">Solana (SOL)</option>
+                        <option value="TON">Toncoin (TON)</option>
+                    </select>
+                    <select id="duel-pred" class="p-3 bg-slate-800 rounded-xl border border-slate-700 text-sm font-bold text-white">
+                        <option value="up">🟢 Рост (LONG)</option>
+                        <option value="down">🔴 Падение (SHORT)</option>
+                    </select>
+                </div>
+                <input type="number" id="duel-amount" value="50" class="w-full p-3 bg-slate-800 rounded-xl border border-slate-700 text-sm font-bold text-white">
+                <button onclick="createDuel()" class="w-full p-3 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-xl text-sm transition shadow-lg shadow-indigo-600/30">Выставить ставку</button>
             </div>
             
-            <!-- Модальное окно истории монеты -->
-            <div id="coin-history-card" class="p-4 bg-slate-900 rounded-xl border border-slate-700 hidden space-y-2">
-                <h3 id="history-title" class="font-bold text-cyan-400">История актива</h3>
-                <p id="history-text" class="text-xs text-slate-300 leading-relaxed">Выберите монету выше, чтобы посмотреть историческую справку и аналитику.</p>
+            <div class="space-y-2">
+                <h3 class="font-semibold text-slate-300 text-sm">Активные вызовы в сети:</h3>
+                <div id="duels-list" class="space-y-2">
+                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center text-slate-400 text-sm">Поиск дуэлей...</div>
+                </div>
             </div>
+            <div id="duel-result" class="text-center font-bold text-sm"></div>
         </section>
 
-        <!-- Вкладка 2: Предикшн-арена -->
-        <section id="tab-arena" class="space-y-4 hidden">
-            <h2 class="text-xl font-bold">⚡ Предикшн-Арена</h2>
-            <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-4">
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Актив:</span>
-                    <span class="font-bold text-cyan-400">Bitcoin (BTC/USD)</span>
-                </div>
-                <div>
-                    <label class="text-sm text-slate-400">Сумма ставки (USDT):</label>
-                    <input type="number" id="bet-amount" value="100" class="w-full mt-1 p-3 bg-slate-800 rounded-xl border border-slate-700 text-white font-bold">
-                </div>
-                <div class="grid grid-cols-2 gap-3 pt-2">
-                    <button onclick="makeTrade('up')" class="p-4 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl transition shadow-lg shadow-emerald-900/40">🟢 Рост (LONG)</button>
-                    <button onclick="makeTrade('down')" class="p-4 bg-rose-600 hover:bg-rose-500 font-bold rounded-xl transition shadow-lg shadow-rose-900/40">🔴 Падение (SHORT)</button>
-                </div>
-                <div id="trade-result" class="text-center text-sm font-medium mt-2 text-slate-400"></div>
-            </div>
-        </section>
-
-        <!-- Вкладка 3: Микро-экономика (Создание своих монет и групп) -->
+        <!-- Микро-экономика / Синдикаты -->
         <section id="tab-economy" class="space-y-4 hidden">
-            <h2 class="text-xl font-bold">🌐 Микро-Экономика</h2>
-            <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3">
-                <h3 class="font-semibold text-cyan-400">Запустить свой токен / Синдикат</h3>
-                <p class="text-xs text-slate-400">Создайте свою мини-монету внутри сообщества, соберите комьюнити и управляйте экономикой!</p>
-                <input type="text" id="new-coin-name" placeholder="Название (например, Alpha DAO)" class="w-full p-3 bg-slate-800 rounded-xl border border-slate-700 text-sm text-white">
-                <input type="text" id="new-coin-symbol" placeholder="Тикер (например, ADAO)" class="w-full p-3 bg-slate-800 rounded-xl border border-slate-700 text-sm text-white">
-                <button onclick="createToken()" class="w-full p-3 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-xl text-sm transition">Создать токен</button>
+            <h2 class="text-xl font-bold flex items-center gap-2">🌐 Экономика Синдикатов</h2>
+            <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3 shadow-xl">
+                <h3 class="font-semibold text-cyan-400 text-sm">Запустить свой токен</h3>
+                <input type="text" id="new-coin-name" placeholder="Название (например, CyberDAO)" class="w-full p-3 bg-slate-800 rounded-xl border border-slate-700 text-sm text-white">
+                <input type="text" id="new-coin-symbol" placeholder="Тикер (например, CYBER)" class="w-full p-3 bg-slate-800 rounded-xl border border-slate-700 text-sm text-white">
+                <button onclick="createToken()" class="w-full p-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-600/30">Создать синдикат</button>
             </div>
             <div class="space-y-2">
-                <h3 class="font-semibold text-slate-300">Токены сообщества:</h3>
+                <h3 class="font-semibold text-slate-300 text-sm">Мировые токены:</h3>
                 <div id="custom-coins-list" class="space-y-2">
-                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center text-slate-400">Загрузка проектов...</div>
+                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center text-slate-400 text-sm">Загрузка синдикатов...</div>
                 </div>
-            </div>
-        </section>
-
-        <!-- Вкладка 4: Футбол и Матчи (Задел под будущие события) -->
-        <section id="tab-football" class="space-y-4 hidden">
-            <h2 class="text-xl font-bold">⚽ Crypto Football Arena</h2>
-            <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 text-center space-y-3">
-                <div class="text-4xl">🏆⚽</div>
-                <h3 class="font-bold text-cyan-400">Спортивные матчи скоро!</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">Раздел находится в разработке. Когда начнутся крупные футбольные события, здесь появятся ставки на матчи с призовыми пулами в крипте!</p>
             </div>
         </section>
 
     </main>
 
-    <!-- Нижняя навигация -->
     <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur border-t border-slate-800 flex justify-around p-3 z-50">
         <button onclick="switchTab('market', this)" class="nav-btn text-cyan-400 font-bold text-xs flex flex-col items-center">📈 <span>Рынок</span></button>
-        <button onclick="switchTab('arena', this)" class="nav-btn text-slate-400 font-bold text-xs flex flex-col items-center">⚡ <span>Арена</span></button>
+        <button onclick="switchTab('duels', this)" class="nav-btn text-slate-400 font-bold text-xs flex flex-col items-center">⚔️ <span>Дуэли</span></button>
         <button onclick="switchTab('economy', this)" class="nav-btn text-slate-400 font-bold text-xs flex flex-col items-center">🌐 <span>Экономика</span></button>
-        <button onclick="switchTab('football', this)" class="nav-btn text-slate-400 font-bold text-xs flex flex-col items-center">⚽ <span>Футбол</span></button>
     </nav>
 
     <script>
         const API_URL = "https://prediction-arena-backend.onrender.com";
 
-        // Надежная авторизация (исправлена ошибка новых аккаунтов на ПК)
         let telegramId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id?.toString();
         if (!telegramId) {
             telegramId = localStorage.getItem('persistent_crypto_user');
@@ -126,27 +123,41 @@
         }
 
         async function changeName() {
-            let newName = prompt("Введите ваше новое имя трейдера:", document.getElementById('username').innerText);
+            let newName = prompt("Введите имя трейдера:", document.getElementById('username').innerText);
             if (!newName) return;
-            try {
-                let res = await fetch(`${API_URL}/api/user/update_name`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ telegram_id: telegramId, username: newName })
-                });
-                let data = await res.json();
-                if (res.ok) {
-                    document.getElementById('username').innerText = data.username;
-                }
-            } catch(e) { alert("Ошибка смены имени"); }
+            let res = await fetch(`${API_URL}/api/user/update_name`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ telegram_id: telegramId, username: newName })
+            });
+            let data = await res.json();
+            if (res.ok) document.getElementById('username').innerText = data.username;
         }
 
-        // История монет
-        const coinHistories = {
-            "BTC": "Bitcoin создан в 2009 году Сатоши Накамото. Прошел путь от цен в центы до цифрового золота. Главный актив крипторынка.",
-            "ETH": "Ethereum запустил эру смарт-контрактов и децентрализованных приложений (DeFi), став фундаментом для альткоинов.",
-            "SOL": "Solana — блокчейн с высокой скоростью транзакций и низкими комиссиями, излюбленная сеть для мемкоинов.",
-            "TON": "Toncoin интегрирован в экосистему Telegram, обеспечивая молниеносные переводы и работу мини-приложений."
+        // График Chart.js
+        let ctx = document.getElementById('cryptoChart').getContext('2d');
+        let cryptoChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['10:00', '11:00', '12:00', '13:00', '14:00', 'Сейчас'],
+                datasets: [{
+                    label: 'Цена ($)',
+                    data: [61000, 62200, 61800, 63500, 64100, 65000],
+                    borderColor: '#06b6d4',
+                    backgroundColor: 'rgba(6, 182, 212, 0.15)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        const assetHistory = {
+            "BTC": { data: [61000, 62200, 61800, 63500, 64100, 65000], desc: "Bitcoin — главное цифровое золото с максимальной ликвидностью." },
+            "ETH": { data: [3200, 3350, 3300, 3450, 3480, 3500], desc: "Ethereum — фундамент смарт-контрактов и децентрализованных финансов." },
+            "SOL": { data: [130, 135, 142, 140, 148, 150], desc: "Solana — высокоскоростной блокчейн для динамичных торгов." },
+            "TON": { data: [5.0, 5.2, 5.1, 5.3, 5.4, 5.5], desc: "Toncoin — официальный актив Telegram-экосистемы." }
         };
 
         async function loadMarket() {
@@ -156,16 +167,16 @@
                 let container = document.getElementById('crypto-list');
                 container.innerHTML = '';
                 for (let [coin, info] of Object.entries(data)) {
-                    let changeColor = info.change >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                    let color = info.change >= 0 ? 'text-emerald-400' : 'text-rose-400';
                     container.innerHTML += `
-                        <div onclick="showCoinHistory('${coin}')" class="p-4 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center cursor-pointer hover:border-cyan-500 transition">
+                        <div onclick="selectAsset('${coin}')" class="p-4 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center cursor-pointer hover:border-cyan-500 transition shadow-md">
                             <div>
                                 <span class="font-bold text-lg">${coin}</span>
-                                <div class="text-xs text-slate-400">Нажмите для истории ℹ️</div>
+                                <div class="text-xs text-slate-400">Нажмите для графика 📊</div>
                             </div>
                             <div class="text-right">
-                                <div class="font-bold">$${info.price.toLocaleString()}</div>
-                                <div class="text-xs ${changeColor}">${info.change > 0 ? '+' : ''}${info.change}%</div>
+                                <div class="font-bold text-base">$${info.price.toLocaleString()}</div>
+                                <div class="text-xs ${color}">${info.change > 0 ? '+' : ''}${info.change}%</div>
                             </div>
                         </div>
                     `;
@@ -173,28 +184,66 @@
             } catch (e) { console.error(e); }
         }
 
-        function showCoinHistory(coin) {
-            document.getElementById('coin-history-card').classList.remove('hidden');
-            document.getElementById('history-title').innerText = `📊 История актива: ${coin}`;
-            document.getElementById('history-text').innerText = coinHistories[coin] || "Историческая справка формируется сообществом.";
+        function selectAsset(coin) {
+            document.getElementById('chart-title').innerText = `График ${coin}/USD (История тренда)`;
+            document.getElementById('coin-desc').innerText = assetHistory[coin]?.desc || "Аналитический обзор актива.";
+            cryptoChart.data.datasets[0].data = assetHistory[coin]?.data || [100, 105, 110, 115, 120];
+            cryptoChart.update();
         }
 
-        async function makeTrade(direction) {
-            let amount = parseFloat(document.getElementById('bet-amount').value);
-            let resultDiv = document.getElementById('trade-result');
-            resultDiv.innerText = "⏳ Проверка ордера и блокчейн-сети...";
+        async function loadDuels() {
             try {
-                let res = await fetch(`${API_URL}/api/trade`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ telegram_id: telegramId, amount: amount, direction: direction })
+                let res = await fetch(`${API_URL}/api/duels`);
+                let duels = await res.json();
+                let container = document.getElementById('duels-list');
+                container.innerHTML = '';
+                if (duels.length === 0) {
+                    container.innerHTML = '<div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center text-slate-400 text-sm">Нет активных вызовов</div>';
+                    return;
+                }
+                duels.forEach(d => {
+                    container.innerHTML += `
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center shadow">
+                            <div>
+                                <div class="font-bold text-sm">${d.creator} (${d.coin})</div>
+                                <div class="text-xs text-emerald-400">Ставка: ${d.amount} USDT | ${d.prediction.toUpperCase()}</div>
+                            </div>
+                            <button onclick="joinDuel(${d.id})" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-xs transition">Принять</button>
+                        </div>
+                    `;
                 });
-                let data = await res.json();
-                resultDiv.innerText = data.message;
-                resultDiv.className = data.success ? "text-center text-sm font-bold mt-2 text-emerald-400" : "text-center text-sm font-bold mt-2 text-rose-400";
+            } catch(e) {}
+        }
+
+        async function createDuel() {
+            let coin = document.getElementById('duel-coin').value;
+            let prediction = document.getElementById('duel-pred').value;
+            let amount = parseFloat(document.getElementById('duel-amount').value);
+            let res = await fetch(`${API_URL}/api/duels/create`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ telegram_id: telegramId, amount: amount, coin: coin, prediction: prediction })
+            });
+            let data = await res.json();
+            alert(data.message || data.detail);
+            loadUser();
+            loadDuels();
+        }
+
+        async function joinDuel(duelId) {
+            let res = await fetch(`${API_URL}/api/duels/join`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ duel_id: duelId, telegram_id: telegramId })
+            });
+            let data = await res.json();
+            if(res.ok) {
+                document.getElementById('duel-result').innerText = `⚔️ Итог: Тренд (${data.trend.toUpperCase()}). Победитель: ${data.winner} (+${data.prize} USDT)!`;
+                document.getElementById('duel-result').className = "text-center font-bold text-sm text-emerald-400 mt-2";
                 loadUser();
-            } catch (e) {
-                resultDiv.innerText = "Ошибка соединения с сервером";
+                loadDuels();
+            } else {
+                alert(data.detail);
             }
         }
 
@@ -204,64 +253,54 @@
                 let coins = await res.json();
                 let container = document.getElementById('custom-coins-list');
                 container.innerHTML = '';
-                if (coins.length === 0) {
-                    container.innerHTML = '<div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center text-slate-400">Пока нет созданных монет. Создайте первую!</div>';
+                if(coins.length === 0) {
+                    container.innerHTML = '<div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center text-slate-400 text-sm">Синдикатов пока нет</div>';
                     return;
                 }
                 coins.forEach(c => {
                     container.innerHTML += `
-                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center shadow">
                             <div>
-                                <div class="font-bold">${c.name} <span class="text-xs text-cyan-400">(${c.symbol})</span></div>
-                                <div class="text-xs text-slate-400">Создатель: ${c.creator}</div>
+                                <div class="font-bold text-sm">${c.name} <span class="text-cyan-400">(${c.symbol})</span></div>
+                                <div class="text-xs text-slate-400">Основатель: ${c.creator} | Казна: $${c.treasury}</div>
                             </div>
-                            <div class="font-bold text-emerald-400">$${c.price.toFixed(2)}</div>
+                            <div class="font-bold text-emerald-400 text-sm">$${c.price}</div>
                         </div>
                     `;
                 });
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
         async function createToken() {
             let name = document.getElementById('new-coin-name').value;
             let symbol = document.getElementById('new-coin-symbol').value;
             let username = document.getElementById('username').innerText;
-            if(!name || !symbol) {
-                alert("Заполните название и тикер монеты!");
-                return;
-            }
+            if(!name || !symbol) return alert("Заполните поля!");
             let res = await fetch(`${API_URL}/api/economy/create`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ name: name, symbol: symbol, creator: username })
             });
             let data = await res.json();
-            if(res.ok) {
-                alert(data.message);
-                loadCustomCoins();
-            } else {
-                alert(data.detail);
-            }
+            if(res.ok) { alert(data.message); loadCustomCoins(); }
         }
 
         function switchTab(tab, btn) {
             document.getElementById('tab-market').classList.add('hidden');
-            document.getElementById('tab-arena').classList.add('hidden');
+            document.getElementById('tab-duels').classList.add('hidden');
             document.getElementById('tab-economy').classList.add('hidden');
-            document.getElementById('tab-football').classList.add('hidden');
             
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
-
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-cyan-400', 'text-slate-400'));
             btn.classList.replace('text-slate-400', 'text-cyan-400');
 
             if(tab === 'market') loadMarket();
+            if(tab === 'duels') loadDuels();
             if(tab === 'economy') loadCustomCoins();
         }
 
         loadUser();
         loadMarket();
-        setInterval(loadMarket, 10000);
     </script>
 </body>
 </html>
