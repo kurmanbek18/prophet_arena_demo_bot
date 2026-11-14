@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prediction Arena</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-blue: #3b82f6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      user-select: none;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lang-switch {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .balance-card {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(168, 85, 247, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .balance-title {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .balance-amount {
+      font-size: 32px;
+      font-weight: 800;
+      margin-top: 4px;
+      color: #fff;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .card-timer {
+      font-size: 12px;
+      color: var(--accent-blue);
+      margin-bottom: 16px;
+    }
+
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn-vote {
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+      color: #fff;
+    }
+
+    .btn-vote:active {
+      transform: scale(0.96);
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-no {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">PROPHET ARENA</div>
+    <button class="lang-switch" id="langBtn" onclick="toggleLanguage()">EN</button>
+  </div>
+
+  <div class="balance-card">
+    <div class="balance-title" id="lblBalance">Мой баланс</div>
+    <div class="balance-amount">1,000 PTS</div>
+  </div>
+
+  <div class="section-title" id="lblActive">Горячие предсказания 🔥</div>
+
+  <!-- Карточка 1 -->
+  <div class="card">
+    <div class="card-title" id="q1">Превысит ли Bitcoin отметку $100,000 до конца недели?</div>
+    <div class="card-timer" id="t1">⏱ Окончание через 2 дня</div>
+    <div class="btn-group">
+      <button class="btn-vote btn-yes" onclick="makePrediction('Bitcoin > 100k', 'YES')" id="btnYes1">ДА (x1.85)</button>
+      <button class="btn-vote btn-no" onclick="makePrediction('Bitcoin > 100k', 'NO')" id="btnNo1">НЕТ (x2.10)</button>
+    </div>
+  </div>
+
+  <!-- Карточка 2 -->
+  <div class="card">
+    <div class="card-title" id="q2">Выйдет ли новое обновление Telegram Mini Apps в этом месяце?</div>
+    <div class="card-timer" id="t2">⏱ Окончание через 5 дней</div>
+    <div class="btn-group">
+      <button class="btn-vote btn-yes" onclick="makePrediction('Telegram Update', 'YES')" id="btnYes2">ДА (x1.50)</button>
+      <button class="btn-vote btn-no" onclick="makePrediction('Telegram Update', 'NO')" id="btnNo2">НЕТ (x2.60)</button>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    let currentLang = 'ru';
+
+    const translations = {
+      ru: {
+        balance: "Мой баланс",
+        active: "Горячие предсказания 🔥",
+        q1: "Превысит ли Bitcoin отметку $100,000 до конца недели?",
+        t1: "⏱ Окончание через 2 дня",
+        q2: "Выйдет ли новое обновление Telegram Mini Apps в этом месяце?",
+        t2: "⏱ Окончание через 5 дней",
+        yes: "ДА",
+        no: "НЕТ"
+      },
+      en: {
+        balance: "My Balance",
+        active: "Hot Predictions 🔥",
+        q1: "Will Bitcoin exceed $100,000 by the end of the week?",
+        t1: "⏱ Ends in 2 days",
+        q2: "Will a new Telegram Mini Apps update be released this month?",
+        t2: "⏱ Ends in 5 days",
+        yes: "YES",
+        no: "NO"
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'ru' ? 'en' : 'ru';
+      document.getElementById('langBtn').innerText = currentLang === 'ru' ? 'EN' : 'RU';
+      
+      const t = translations[currentLang];
+      document.getElementById('lblBalance').innerText = t.balance;
+      document.getElementById('lblActive').innerText = t.active;
+      document.getElementById('q1').innerText = t.q1;
+      document.getElementById('t1').innerText = t.t1;
+      document.getElementById('q2').innerText = t.q2;
+      document.getElementById('t2').innerText = t.t2;
+
+      document.getElementById('btnYes1').innerText = `${t.yes} (x1.85)`;
+      document.getElementById('btnNo1').innerText = `${t.no} (x2.10)`;
+      document.getElementById('btnYes2').innerText = `${t.yes} (x1.50)`;
+      document.getElementById('btnNo2').innerText = `${t.no} (x2.60)`;
+    }
+
+    function makePrediction(eventTitle, choice) {
+      const payload = {
+        event: eventTitle,
+        choice: choice,
+        amount: 100
+      };
+      
+      // Отправляем данные обратно боту
+      tg.sendData(JSON.stringify(payload));
+    }
+  </script>
+</body>
+</html>
