@@ -2,133 +2,408 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Crypto Arena v4.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Crypto Arena Pro</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
-  body { background: #0b0f19; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
-  .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-  .tap-btn:active { transform: scale(0.95); transition: 0.1s; }
+  body { background:#020617; -webkit-tap-highlight-color:transparent; color:#fff; font-family:-apple-system,BlinkMacSystemFont,sans-serif; }
+  .card { background:#0f172a; border:1px solid #1e293b; border-radius:1rem; }
+  .btn  { border-radius:.75rem; font-weight:700; font-size:.875rem; padding:.7rem 1rem; transition:.15s; }
+  .btn:active { transform:scale(.97); }
+  .inp  { width:100%; background:#1e293b; border:1px solid #334155; border-radius:.75rem; padding:.7rem; font-size:.875rem; color:#fff; outline:none; }
+  .chip { flex-shrink:0; background:#0f172a; border:1px solid #1e293b; border-radius:.75rem; padding:.5rem .75rem; text-align:left; min-width:92px; cursor:pointer; }
+  .chip.on { border-color:#22d3ee; background:rgba(22,78,99,0.3); }
+  .tf.on { background:#164e63; color:#67e8f9; }
+  .hide-scroll::-webkit-scrollbar { display:none; }
   .glow-green { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
   .glow-red { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
 </style>
 </head>
 <body class="pb-24">
 
-<header class="p-4 glass sticky top-0 z-50 flex justify-between items-center">
-  <div class="flex items-center gap-3">
-    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-lg" id="avatar">🔮</div>
-    <div>
-      <div id="username" class="font-bold text-sm">Трейдер</div>
-      <div id="level" class="text-xs text-cyan-400">HODL Новичок</div>
+<header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center sticky top-0 z-40">
+  <div>
+    <span id="level" class="text-xs px-2.5 py-1 bg-cyan-500/20 text-cyan-400 rounded-full font-bold">…</span>
+    <div class="flex items-center gap-2 mt-1">
+      <h1 id="username" class="text-lg font-bold">Трейдер</h1>
+      <button onclick="changeName()" class="text-xs bg-slate-800 px-2 py-0.5 rounded text-cyan-400">✏️</button>
     </div>
   </div>
   <div class="text-right">
-    <div class="text-[10px] text-slate-400">БАЛАНС</div>
-    <div class="text-base font-black text-emerald-400"><span id="balance">1,000</span> USDT</div>
+    <div class="text-xs text-slate-400">Баланс</div>
+    <div class="text-lg font-black text-emerald-400"><span id="balance">0.00</span> USDT</div>
   </div>
 </header>
 
-<main class="p-4 space-y-4 max-w-md mx-auto">
-  <section id="tab-duels" class="space-y-4">
-    <div class="glass p-4 rounded-2xl space-y-3">
-      <h2 class="text-lg font-bold flex items-center gap-2">⚔️ Быстрая PvP Дуэль</h2>
-      <p class="text-xs text-slate-400">Выбери актив и жми направление в 1 клик!</p>
-      
-      <div class="grid grid-cols-4 gap-2" id="coin-picker">
-        <button onclick="setCoin('BTC')" class="coin-btn p-2 rounded-xl glass text-center border-cyan-500 border" data-coin="BTC"><div class="text-xs font-bold">BTC</div></button>
-        <button onclick="setCoin('ETH')" class="coin-btn p-2 rounded-xl glass text-center" data-coin="ETH"><div class="text-xs font-bold">ETH</div></button>
-        <button onclick="setCoin('TON')" class="coin-btn p-2 rounded-xl glass text-center" data-coin="TON"><div class="text-xs font-bold">TON</div></button>
-        <button onclick="setCoin('SOL')" class="coin-btn p-2 rounded-xl glass text-center" data-coin="SOL"><div class="text-xs font-bold">SOL</div></button>
-      </div>
+<main class="p-4 max-w-md mx-auto space-y-4">
 
-      <div class="flex gap-2">
-        <input id="duel-amount" type="number" value="25" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-center font-bold text-sm" placeholder="Ставка USDT">
+<!-- РЫНОК -->
+<section id="tab-market" class="space-y-3">
+  <div id="chips" class="flex gap-2 overflow-x-auto hide-scroll pb-1"></div>
+  <div class="card p-3 space-y-2">
+    <div class="flex justify-between items-end">
+      <div>
+        <div id="chart-title" class="font-bold text-cyan-400 text-sm">BTC / USDT</div>
+        <div id="chart-price" class="text-xl font-black">—</div>
       </div>
-
-      <div class="grid grid-cols-2 gap-3 pt-2">
-        <button onclick="makeDuel('up')" class="tap-btn bg-emerald-600 hover:bg-emerald-500 glow-green p-4 rounded-2xl text-center font-black text-lg flex flex-col items-center justify-center">
-          <span>🟢 РОСТ</span>
-          <span class="text-[10px] font-normal opacity-80">Вверх</span>
-        </button>
-        <button onclick="makeDuel('down')" class="tap-btn bg-rose-600 hover:bg-rose-500 glow-red p-4 rounded-2xl text-center font-black text-lg flex flex-col items-center justify-center">
-          <span>🔴 ПАДЕНИЕ</span>
-          <span class="text-[10px] font-normal opacity-80">Вниз</span>
-        </button>
+      <div id="tf-row" class="flex gap-1 text-xs">
+        <button class="tf px-2 py-1 rounded bg-slate-800" data-tf="1m"  onclick="setTf('1m')">1м</button>
+        <button class="tf px-2 py-1 rounded bg-slate-800" data-tf="5m"  onclick="setTf('5m')">5м</button>
+        <button class="tf px-2 py-1 rounded bg-slate-800 on" data-tf="15m" onclick="setTf('15m')">15м</button>
+        <button class="tf px-2 py-1 rounded bg-slate-800" data-tf="1h"  onclick="setTf('1h')">1ч</button>
+        <button class="tf px-2 py-1 rounded bg-slate-800" data-tf="1d"  onclick="setTf('1d')">1д</button>
       </div>
     </div>
-  </section>
+    <div id="chart"></div>
+    <div id="chart-meta" class="text-xs text-slate-400"></div>
+  </div>
+  <div class="card p-4 space-y-3">
+    <div class="flex justify-between text-sm"><span class="text-slate-400">У вас</span><b id="held">0</b></div>
+    <input id="trade-usdt" type="number" inputmode="decimal" value="100" class="inp" placeholder="Сумма в USDT">
+    <button onclick="doTrade('buy')" class="btn w-full bg-emerald-600 hover:bg-emerald-500">Купить</button>
+    <div class="grid grid-cols-4 gap-2">
+      <button onclick="doTrade('sell',25)"  class="btn bg-rose-600/80 !px-0">25%</button>
+      <button onclick="doTrade('sell',50)"  class="btn bg-rose-600/80 !px-0">50%</button>
+      <button onclick="doTrade('sell',75)"  class="btn bg-rose-600/80 !px-0">75%</button>
+      <button onclick="doTrade('sell',100)" class="btn bg-rose-600 !px-0">Всё</button>
+    </div>
+  </div>
+</section>
 
-  <section id="tab-friends" class="space-y-4 hidden">
-    <div class="glass p-5 rounded-2xl text-center space-y-3">
-      <div class="text-4xl">🤝</div>
-      <h2 class="text-xl font-bold">Приглашай друзей</h2>
-      <p class="text-xs text-slate-400">Зарабатывай <b>+100 USDT</b> за каждого друга и получай <b>10% от побед</b>!</p>
-      <button onclick="copyRefLink()" class="tap-btn w-full bg-cyan-600 hover:bg-cyan-500 py-3 rounded-xl font-bold text-sm shadow-lg shadow-cyan-900/40">🔗 Скопировать ссылку</button>
+<!-- ДУЭЛИ В 1 КЛИК -->
+<section id="tab-duels" class="space-y-3 hidden">
+  <div class="card p-4 space-y-3">
+    <h2 class="text-lg font-bold">⚔️ Быстрая PvP Дуэль</h2>
+    <p class="text-xs text-slate-400">Выбери актив и жми направление в 1 клик!</p>
+    
+    <div class="grid grid-cols-4 gap-2" id="coin-picker">
+      <button onclick="setDuelCoin('BTC')" class="coin-btn p-2 rounded-xl card text-center border-cyan-500 border" data-coin="BTC"><div class="text-xs font-bold">BTC</div></button>
+      <button onclick="setDuelCoin('ETH')" class="coin-btn p-2 rounded-xl card text-center" data-coin="ETH"><div class="text-xs font-bold">ETH</div></button>
+      <button onclick="setDuelCoin('TON')" class="coin-btn p-2 rounded-xl card text-center" data-coin="TON"><div class="text-xs font-bold">TON</div></button>
+      <button onclick="setDuelCoin('SOL')" class="coin-btn p-2 rounded-xl card text-center" data-coin="SOL"><div class="text-xs font-bold">SOL</div></button>
     </div>
-    <div class="glass p-4 rounded-2xl space-y-3">
-      <div class="flex justify-between items-center text-xs"><span class="text-slate-400">Друзей</span><b id="ref-count" class="text-cyan-400 text-sm">0</b></div>
-      <div class="flex justify-between items-center text-xs"><span class="text-slate-400">Заработано</span><b id="ref-earned" class="text-emerald-400 text-sm">0 USDT</b></div>
+
+    <input id="d-amount" type="number" value="50" class="inp" placeholder="Ставка USDT">
+    
+    <div class="grid grid-cols-2 gap-3 pt-1">
+      <button onclick="createDuelQuick('up')" class="btn bg-emerald-600 glow-green py-4 text-center text-lg flex flex-col items-center">
+        <span>🟢 РОСТ</span><span class="text-[10px] opacity-80 font-normal">Вверх</span>
+      </button>
+      <button onclick="createDuelQuick('down')" class="btn bg-rose-600 glow-red py-4 text-center text-lg flex flex-col items-center">
+        <span>🔴 ПАДЕНИЕ</span><span class="text-[10px] opacity-80 font-normal">Вниз</span>
+      </button>
     </div>
-  </section>
+  </div>
+
+  <h3 class="font-semibold text-slate-300 text-sm">Открытые вызовы</h3>
+  <div id="duels-open" class="space-y-2"></div>
+  <h3 class="font-semibold text-slate-300 text-sm">Мои дуэли</h3>
+  <div id="duels-mine" class="space-y-2"></div>
+</section>
+
+<!-- ФУТБОЛ -->
+<section id="tab-football" class="space-y-3 hidden">
+  <h2 class="text-xl font-bold">⚽ Футбольные прогнозы</h2>
+  <div id="fb-list" class="space-y-2"></div>
+  <h3 class="font-semibold text-slate-300 text-sm pt-2">Мои ставки</h3>
+  <div id="fb-bets" class="space-y-2"></div>
+</section>
+
+<!-- МИР ТОКЕНОВ -->
+<section id="tab-world" class="space-y-3 hidden">
+  <h2 class="text-xl font-bold">🌐 Мир токенов</h2>
+  <div class="card p-4 space-y-2">
+    <h3 class="font-semibold text-cyan-400 text-sm">Запустить свой токен · 100 USDT</h3>
+    <input id="c-name" class="inp" placeholder="Название (например, CyberDAO)" maxlength="30">
+    <input id="c-sym" class="inp" placeholder="Тикер (3–6 букв, например CYBER)" maxlength="6">
+    <input id="c-desc" class="inp" placeholder="Идея проекта" maxlength="140">
+    <button onclick="createCoin()" class="btn w-full bg-emerald-600">Запустить</button>
+  </div>
+  <div id="coins" class="space-y-2"></div>
+</section>
+
+<!-- УЧЁБА -->
+<section id="tab-learn" class="space-y-3 hidden">
+  <h2 class="text-xl font-bold">🎓 Академия</h2>
+  <div id="lessons" class="space-y-2"></div>
+</section>
+
+<!-- ДРУЗЬЯ (РЕФЕРАЛЫ) -->
+<section id="tab-friends" class="space-y-3 hidden">
+  <div class="card p-5 text-center space-y-3">
+    <div class="text-4xl">🤝</div>
+    <h2 class="text-xl font-bold">Приглашай друзей</h2>
+    <p class="text-xs text-slate-400">Зарабатывай <b>+50 USDT</b> за каждого друга и получай бонус к уровню!</p>
+    <button onclick="copyRefLink()" class="btn w-full bg-cyan-600">🔗 Скопировать реферальную ссылку</button>
+  </div>
+  <div class="card p-4 space-y-2">
+    <div class="flex justify-between text-xs"><span class="text-slate-400">Приглашено</span><b id="ref-count" class="text-cyan-400">0</b></div>
+    <div class="flex justify-between text-xs"><span class="text-slate-400">Заработано</span><b id="ref-earned" class="text-emerald-400">0 USDT</b></div>
+  </div>
+</section>
+
+<!-- ПРОФИЛЬ -->
+<section id="tab-profile" class="space-y-3 hidden">
+  <div class="card p-4 space-y-3">
+    <div class="flex justify-between items-end">
+      <div><div class="text-xs text-slate-400">Общий капитал</div><div id="p-worth" class="text-2xl font-black text-emerald-400">—</div></div>
+      <button id="daily-btn" onclick="claimDaily()" class="btn bg-amber-500 text-slate-900">🎁 Награда</button>
+    </div>
+    <div>
+      <div class="flex justify-between text-xs text-slate-400 mb-1"><span id="p-level"></span><span id="p-xp"></span></div>
+      <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="p-bar" class="h-full bg-cyan-400" style="width:0"></div></div>
+    </div>
+  </div>
+  <h3 class="font-semibold text-slate-300 text-sm">Портфель</h3>
+  <div id="p-holdings" class="space-y-2"></div>
+  <h3 class="font-semibold text-slate-300 text-sm pt-2">🏆 Таблица лидеров</h3>
+  <div id="p-top" class="space-y-1"></div>
+</section>
+
 </main>
 
-<nav class="fixed bottom-0 inset-x-0 glass border-t border-slate-800 grid grid-cols-2 p-2 z-50">
-  <button onclick="switchTab('duels')" class="flex flex-col items-center text-cyan-400 font-bold text-xs py-1"><span class="text-xl">⚔️</span> Арена</button>
-  <button onclick="switchTab('friends')" class="flex flex-col items-center text-slate-400 font-bold text-xs py-1"><span class="text-xl">🤝</span> Друзья</button>
+<nav class="fixed bottom-0 inset-x-0 bg-slate-900/95 backdrop-blur border-t border-slate-800 grid grid-cols-7 p-1 z-50 text-[10px]">
+  <button data-tab="market"   onclick="switchTab('market')"   class="nav font-bold flex flex-col items-center text-cyan-400"><span class="text-base">📈</span>Рынок</button>
+  <button data-tab="duels"    onclick="switchTab('duels')"    class="nav font-bold flex flex-col items-center text-slate-500"><span class="text-base">⚔️</span>Дуэли</button>
+  <button data-tab="football" onclick="switchTab('football')" class="nav font-bold flex flex-col items-center text-slate-500"><span class="text-base">⚽</span>Футбол</button>
+  <button data-tab="world"    onclick="switchTab('world')"    class="nav font-bold flex flex-col items-center text-slate-500"><span class="text-base">🌐</span>Мир</button>
+  <button data-tab="learn"    onclick="switchTab('learn')"    class="nav font-bold flex flex-col items-center text-slate-500"><span class="text-base">🎓</span>Учёба</button>
+  <button data-tab="friends"  onclick="switchTab('friends')"  class="nav font-bold flex flex-col items-center text-slate-500"><span class="text-base">🤝</span>Друзья</button>
+  <button data-tab="profile"  onclick="switchTab('profile')"  class="nav font-bold flex flex-col items-center text-slate-500"><span class="text-base">👤</span>Профиль</button>
 </nav>
+
+<div id="toast" class="fixed top-20 inset-x-4 max-w-md mx-auto z-[70] hidden"></div>
+<div id="modal" class="fixed inset-0 bg-black/70 z-[60] hidden items-end justify-center" onclick="if(event.target===this)closeModal()">
+  <div id="modal-body" class="bg-slate-900 border-t border-slate-700 w-full max-w-md rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto"></div>
+</div>
 
 <script>
 const API = "https://prediction-arena-backend.onrender.com";
-let selectedCoin = "BTC";
+const TABS = ["market","duels","football","world","learn","friends","profile"];
+const LOADERS = { market: loadMarketTab, duels: loadDuels, football: loadFootball, world: loadCoins, learn: loadLessons, friends: loadFriends, profile: loadProfile };
+
 const tg = window.Telegram?.WebApp;
 tg?.ready(); tg?.expand();
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (n, d=2) => Number(n).toLocaleString('en-US', {maximumFractionDigits:d, minimumFractionDigits:d});
+const pf = n => n >= 100 ? fmt(n,2) : n >= 1 ? fmt(n,4) : Number(n).toPrecision(4);
+const testId = localStorage.getItem('uid') || (localStorage.uid = 'web_' + Math.random().toString(36).slice(2,10));
 
-function setCoin(coin) {
-  selectedCoin = coin;
+async function api(path, body) {
+  const res = await fetch(API + path, {
+    method: body ? 'POST' : 'GET',
+    headers: {'Content-Type':'application/json', 'X-Init-Data': tg?.initData || '', 'X-Test-User': testId},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  let data = {}; try { data = await res.json(); } catch(e){}
+  if (!res.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Ошибка ' + res.status);
+  return data;
+}
+async function act(fn) { try { return await fn(); } catch(e) { toast(e.message, false); } }
+
+let toastT;
+function toast(msg, ok=true) {
+  const t = $('toast');
+  t.innerHTML = `<div class="${ok?'bg-emerald-600':'bg-rose-600'} rounded-xl p-3 text-sm font-semibold shadow-xl">${esc(msg)}</div>`;
+  t.classList.remove('hidden'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.add('hidden'), 4500);
+  try { tg?.HapticFeedback?.notificationOccurred(ok ? 'success' : 'error'); } catch(e){}
+}
+function openModal(html) { $('modal-body').innerHTML = html; $('modal').classList.remove('hidden'); $('modal').classList.add('flex'); }
+function closeModal() { $('modal').classList.add('hidden'); $('modal').classList.remove('flex'); }
+function ask(title, hint, val) {
+  return new Promise(res => {
+    openModal(`<h3 class="font-bold mb-1">${esc(title)}</h3><p class="text-xs text-slate-400 mb-3">${hint}</p>
+      <input id="ask-in" class="inp mb-3" value="${esc(val)}">
+      <div class="grid grid-cols-2 gap-2"><button class="btn bg-slate-800" onclick="closeModal();window._r(null)">Отмена</button>
+      <button class="btn bg-cyan-600" onclick="const v=$('ask-in').value;closeModal();window._r(v)">ОК</button></div>`);
+    window._r = res;
+  });
+}
+
+let me = null, market = {}, coinsList = [], sel = {sym:'BTC', tf:'15m'}, activeTab = 'market', needFit = true, duelCoin = 'BTC';
+const symColor = {up:'text-emerald-400', down:'text-rose-400'};
+
+async function refreshMe() {
+  me = await api('/api/me');
+  $('username').textContent = me.username;
+  $('level').textContent = me.level.name;
+  $('balance').textContent = fmt(me.balance);
+  updateHeld();
+}
+function updateHeld() {
+  const h = me?.holdings.find(x => x.symbol === sel.sym);
+  $('held').textContent = h ? `${Number(h.amount.toPrecision(6))} ${sel.sym} ≈ $${fmt(h.value)}` : `0 ${sel.sym}`;
+}
+async function changeName() {
+  const n = await ask('Имя трейдера', 'От 2 до 24 символов', me?.username || '');
+  if (n) act(async () => { await api('/api/user/update_name', {username: n}); await refreshMe(); });
+}
+
+const chart = LightweightCharts.createChart($('chart'), {
+  height: 260, width: $('chart').clientWidth || 320,
+  layout: {background:{color:'transparent'}, textColor:'#94a3b8'},
+  grid: {vertLines:{color:'#1e293b'}, horzLines:{color:'#1e293b'}},
+  timeScale: {timeVisible:true, borderColor:'#334155'}, rightPriceScale: {borderColor:'#334155'},
+  localization: {priceFormatter: pf}
+});
+const candle = chart.addCandlestickSeries({upColor:'#34d399', downColor:'#fb7185', borderVisible:false, wickUpColor:'#34d399', wickDownColor:'#fb7185'});
+const line = chart.addLineSeries({color:'#22d3ee', lineWidth:2, visible:false});
+window.addEventListener('resize', () => chart.applyOptions({width: $('chart').clientWidth}));
+
+function setTf(tf) { sel.tf = tf; needFit = true; document.querySelectorAll('.tf').forEach(b => b.classList.toggle('on', b.dataset.tf === tf)); loadChart(); }
+
+async function selectAsset(sym) {
+  sel.sym = sym; needFit = true;
+  if (activeTab !== 'market') switchTab('market');
+  renderChips(); updateHeld(); await loadChart();
+}
+
+async function loadChart() {
+  const real = sel.sym in market;
+  $('chart-title').textContent = real ? `${sel.sym} / USDT · Binance` : `${sel.sym} · игровой токен`;
+  $('tf-row').style.display = real ? 'flex' : 'none';
+  try {
+    if (real) {
+      const k = await api(`/api/klines/${sel.sym}?interval=${sel.tf}`);
+      line.applyOptions({visible:false}); candle.applyOptions({visible:true}); candle.setData(k);
+      const m = market[sel.sym];
+      $('chart-price').innerHTML = `$${pf(m.price)} <span class="text-sm ${m.change>=0?symColor.up:symColor.down}">${m.change>=0?'+':''}${m.change.toFixed(2)}%</span>`;
+    } else {
+      const h = await api(`/api/coins/${sel.sym}/history`);
+      candle.applyOptions({visible:false}); line.applyOptions({visible:true}); line.setData(h);
+      const c = coinsList.find(x => x.symbol === sel.sym);
+      $('chart-price').textContent = c ? '$' + pf(c.price) : '—';
+    }
+    if (needFit) { chart.timeScale().fitContent(); needFit = false; }
+  } catch(e) {}
+}
+
+function renderChips() {
+  const items = Object.entries(market).map(([s,i]) => `<button onclick="selectAsset('${s}')" class="chip ${s===sel.sym?'on':''}"><div class="font-bold text-sm">${s}</div><div class="text-xs">$${pf(i.price)}</div></button>`);
+  const mine = coinsList.map(c => `<button onclick="selectAsset('${c.symbol}')" class="chip ${c.symbol===sel.sym?'on':''}"><div class="font-bold text-sm text-amber-300">${c.symbol}</div><div class="text-xs">$${pf(c.price)}</div></button>`);
+  $('chips').innerHTML = items.concat(mine).join('');
+}
+
+async function loadMarketTab() {
+  try { market = await api('/api/market'); coinsList = await api('/api/coins'); } catch(e) {}
+  renderChips(); await loadChart();
+}
+
+function doTrade(side, pct) {
+  act(async () => {
+    const body = side === 'buy' ? {symbol: sel.sym, side, usdt: parseFloat($('trade-usdt').value)} : {symbol: sel.sym, side, pct};
+    const r = await api('/api/trade', body);
+    toast(r.msg); await refreshMe(); loadChart();
+  });
+}
+
+function setDuelCoin(coin) {
+  duelCoin = coin;
   document.querySelectorAll('.coin-btn').forEach(b => {
     b.classList.toggle('border-cyan-500', b.dataset.coin === coin);
     b.classList.toggle('border', b.dataset.coin === coin);
   });
 }
 
-function switchTab(tab) {
-  document.getElementById('tab-duels').classList.toggle('hidden', tab !== 'duels');
-  document.getElementById('tab-friends').classList.toggle('hidden', tab !== 'friends');
-  if (tab === 'friends') loadFriends();
+function createDuelQuick(pred) {
+  act(async () => {
+    const amt = parseFloat($('d-amount').value || 10);
+    const r = await api('/api/duels/create', {coin: duelCoin, prediction: pred, amount: amt, duration: 300});
+    toast(r.message); await refreshMe(); loadDuels();
+  });
 }
 
-async function makeDuel(pred) {
-  const amt = parseFloat(document.getElementById('duel-amount').value);
+const joinDuel = id => act(async () => { toast((await api('/api/duels/join', {duel_id:id})).message); await refreshMe(); loadDuels(); });
+const cancelDuel = id => act(async () => { await api('/api/duels/cancel', {duel_id:id}); toast('Дуэль отменена'); await refreshMe(); loadDuels(); });
+
+async function loadDuels() {
   try {
-    const res = await fetch(API + '/api/duels/create', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({coin: selectedCoin, prediction: pred, amount: amt})
-    });
-    const data = await res.json();
-    if (res.ok) {
-      tg?.HapticFeedback?.notificationOccurred('success');
-      alert('⚔️ Вызов создан!');
-    } else alert(data.detail);
-  } catch(e) { alert('Ошибка сети'); }
+    const data = await api('/api/duels');
+    $('duels-open').innerHTML = data.open.map(d => `<div class="card p-3 flex justify-between items-center"><div><div class="font-bold text-sm">${esc(d.creator)} · ${d.coin}</div><div class="text-xs text-slate-400">Ставка: ${d.amount} USDT</div></div><button onclick="joinDuel(${d.id})" class="btn bg-emerald-600 !py-2">Принять</button></div>`).join('') || '<div class="card p-3 text-center text-slate-400 text-sm">Нет открытых вызовов</div>';
+    $('duels-mine').innerHTML = data.mine.map(d => `<div class="card p-3"><div class="font-bold text-sm">${d.coin} · ${d.amount} USDT</div><div class="text-xs text-slate-400">Статус: ${d.status}</div></div>`).join('') || '<div class="card p-3 text-center text-slate-400 text-sm">Нет активных дуэлей</div>';
+  } catch(e) {}
 }
 
-function copyRefLink() {
-  const link = `https://t.me/your_bot?start=ref_${tg?.initDataUnsafe?.user?.id || 'web'}`;
-  navigator.clipboard.writeText(link);
-  alert('Ссылка скопирована!');
+async function loadFootball() {
+  try {
+    const list = await api('/api/football/events');
+    $('fb-list').innerHTML = list.map((e,i) => `<div class="card p-3 space-y-2"><div class="font-bold text-sm">${esc(e.home)} — ${esc(e.away)}</div><button onclick="betFb('${e.id}')" class="btn bg-slate-800 w-full">Поставить 50 USDT</button></div>`).join('') || '<div class="card p-3 text-center text-slate-400 text-sm">Нет матчей</div>';
+  } catch(e){}
+}
+async function betFb(id) {
+  act(async () => { await api('/api/football/bet', {event_id: id, pick: '1', amount: 50}); toast('Ставка принята!'); await refreshMe(); loadFootball(); });
+}
+
+function createCoin() {
+  act(async () => {
+    const r = await api('/api/coins/create', {name: $('c-name').value, symbol: $('c-sym').value, description: $('c-desc').value});
+    toast(r.message); await refreshMe(); loadCoins();
+  });
+}
+async function loadCoins() {
+  try {
+    coinsList = await api('/api/coins');
+    $('coins').innerHTML = coinsList.map(c => `<button onclick="selectAsset('${c.symbol}')" class="card p-3 w-full text-left flex justify-between items-center"><div><div class="font-bold text-sm">${esc(c.name)} <span class="text-amber-300">${c.symbol}</span></div><div class="text-xs text-slate-500">Пул: $${fmt(c.liquidity)}</div></div><div class="font-bold text-emerald-400">$${pf(c.price)}</div></button>`).join('') || '<div class="card p-3 text-center text-slate-400 text-sm">Нет токенов</div>';
+  } catch(e){}
+}
+
+let lessonsCache = [];
+async function loadLessons() {
+  try {
+    lessonsCache = await api('/api/lessons');
+    $('lessons').innerHTML = lessonsCache.map((l,i) => `<button onclick="answerLesson('${l.id}')" class="card p-3 w-full text-left flex items-center gap-3"><span class="text-2xl">${l.emoji}</span><div class="flex-1"><div class="font-bold text-sm">${esc(l.title)}</div><div class="text-xs text-slate-400">+${l.xp} XP · +${l.usdt} USDT</div></div><span>${l.done?'✅':'›'}</span></button>`).join('');
+  } catch(e){}
+}
+async function answerLesson(id) {
+  act(async () => {
+    const r = await api('/api/lessons/complete', {lesson_id: id, answer: 0});
+    toast(r.correct ? 'Верно! Награда получена' : 'Неверно');
+    await refreshMe(); loadLessons();
+  });
 }
 
 async function loadFriends() {
   try {
-    const res = await fetch(API + '/api/friends');
-    const data = await res.json();
-    document.getElementById('ref-count').textContent = data.total;
-    document.getElementById('ref-earned').textContent = data.earned + ' USDT';
+    const d = await api('/api/friends');
+    $('ref-count').textContent = d.total;
+    $('ref-earned').textContent = d.earned + ' USDT';
   } catch(e){}
 }
+function copyRefLink() {
+  navigator.clipboard.writeText(`https://t.me/your_bot?start=ref_${me.id}`);
+  toast('Реферальная ссылка скопирована!');
+}
+
+async function loadProfile() {
+  await refreshMe();
+  $('p-worth').textContent = '$' + fmt(me.networth);
+  const L = me.level; $('p-level').textContent = L.name;
+  $('p-xp').textContent = `${L.xp} XP`;
+  $('p-bar').style.width = '100%';
+  $('p-holdings').innerHTML = me.holdings.map(h => `<div class="card p-3 flex justify-between"><span>${h.symbol} (${Number(h.amount.toPrecision(4))})</span><b>$${fmt(h.value)}</b></div>`).join('') || '<div class="card p-3 text-center text-slate-400 text-sm">Портфель пуст</div>';
+  try {
+    const top = await api('/api/leaderboard');
+    $('p-top').innerHTML = top.map((r,i) => `<div class="flex justify-between text-sm px-3 py-2 rounded ${r.me?'bg-cyan-500/10':''}"><span>${i+1}. ${esc(r.name)}</span><b>$${fmt(r.worth,0)}</b></div>`).join('');
+  } catch(e){}
+}
+function claimDaily() { act(async () => { const r = await api('/api/daily', {}); toast(`🎁 +${r.reward} USDT`); loadProfile(); }); }
+
+function switchTab(tab) {
+  activeTab = tab;
+  TABS.forEach(t => $('tab-' + t).classList.toggle('hidden', t !== tab));
+  document.querySelectorAll('.nav').forEach(b => { const on = b.dataset.tab === tab; b.classList.toggle('text-cyan-400', on); b.classList.toggle('text-slate-500', !on); });
+  if (tab === 'market') chart.applyOptions({width: $('chart').clientWidth});
+  LOADERS[tab]();
+  window.scrollTo(0,0);
+}
+
+(async () => {
+  try { await refreshMe(); } catch(e){}
+  switchTab('market');
+})();
 </script>
 </body>
 </html>
