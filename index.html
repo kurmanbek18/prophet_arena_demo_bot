@@ -2,380 +2,267 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Crypto Arena Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SNEAKER DROP | Бишкек</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
-  body { background:#020617; -webkit-tap-highlight-color:transparent; color:#fff; font-family:-apple-system,BlinkMacSystemFont,sans-serif; transition: 0.3s; }
-  body.pro-theme { background: #000000; color: #f1f5f9; }
-  .card { background:#0f172a; border:1px solid #1e293b; border-radius:1rem; }
-  body.pro-theme .card { background: #0c0c0c; border: 1px solid #222222; }
-  .btn  { border-radius:.75rem; font-weight:700; font-size:.875rem; padding:.7rem 1rem; transition:.15s; }
-  .btn:active { transform:scale(.97); }
-  .inp  { width:100%; background:#1e293b; border:1px solid #334155; border-radius:.75rem; padding:.7rem; font-size:.875rem; color:#fff; outline:none; }
-  body.pro-theme .inp { background: #121212; border-color: #262626; color: #fff; }
-  .chip { flex-shrink:0; background:#0f172a; border:1px solid #1e293b; border-radius:.75rem; padding:.5rem .75rem; cursor:pointer; min-width:92px; }
-  body.pro-theme .chip { background: #0c0c0c; border-color: #222222; }
-  .chip.on { border-color:#22d3ee; background:rgba(22,78,99,0.3); }
-  body.pro-theme .chip.on { border-color: #f59e0b; background: rgba(245, 158, 11, 0.15); }
-  .tf.on { background:#164e63; color:#67e8f9; }
-  body.pro-theme .tf.on { background: #292524; color: #f59e0b; }
-  .hide-scroll::-webkit-scrollbar { display:none; }
+  body { background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
+  .card { background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 1rem; }
+  .btn-accent { background: #fff; color: #000; font-weight: 700; border-radius: 0.75rem; padding: 0.75rem; transition: 0.2s; }
+  .btn-accent:active { transform: scale(0.97); }
+  .inp { width: 100%; background: #121212; border: 1px solid #262626; border-radius: 0.75rem; padding: 0.75rem; color: #fff; outline: none; font-size: 14px; }
+  .size-btn { border: 1px solid #333; border-radius: 0.5rem; padding: 5px 8px; font-size: 11px; font-weight: bold; background: #111; cursor: pointer; }
+  .size-btn.selected { border-color: #fff; background: #fff; color: #000; }
+  .cat-btn { background: #111; border: 1px solid #222; border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: bold; color: #888; cursor: pointer; }
+  .cat-btn.active { background: #fff; color: #000; border-color: #fff; }
 </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
-<header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center sticky top-0 z-45">
+<header class="p-4 border-b border-zinc-900 sticky top-0 bg-black/95 backdrop-blur z-40 flex justify-between items-center">
   <div>
-    <span id="level" class="text-xs px-2.5 py-1 bg-cyan-500/20 text-cyan-400 rounded-full font-bold">...</span>
-    <div class="flex items-center gap-2 mt-1">
-      <h1 id="username" class="text-lg font-bold">Трейдер</h1>
-      <button onclick="changeName()" class="text-xs bg-slate-800 px-2 py-0.5 rounded text-cyan-400">✏️</button>
-    </div>
+    <h1 class="font-black tracking-wider text-base">SNEAKER <span class="text-zinc-400">BISHKEK</span></h1>
+    <p class="text-[10px] text-emerald-400 font-semibold">🛡️ Лимитированные коллекции · Без предоплаты</p>
   </div>
-  <div class="flex items-center gap-3">
-    <!-- Мультиязычность -->
-    <select id="lang-select" onchange="changeLang(this.value)" class="bg-slate-800 text-xs px-2 py-1 rounded border border-slate-700 text-cyan-400 font-bold outline-none cursor-pointer">
-      <option value="ru">RU</option>
-      <option value="en">EN</option>
-    </select>
-    <!-- Переключатель Crypto Arena Pro -->
-    <button onclick="toggleProMode()" id="pro-badge" class="px-3 py-1 rounded-full text-xs font-black bg-slate-800 border border-slate-700 text-slate-300">
-      ⚡ <span id="pro-status">OFF</span>
-    </button>
+  <div class="text-right">
+    <div id="cart-badge" class="text-xs font-bold text-zinc-300 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">🛒 0</div>
   </div>
 </header>
 
 <main class="p-4 max-w-md mx-auto space-y-4">
 
-<!-- РЫНОК -->
-<section id="tab-market" class="space-y-3">
-  <div id="chips" class="flex gap-2 overflow-x-auto hide-scroll pb-1"></div>
-  <div class="card p-3 space-y-2">
-    <div class="flex justify-between items-end">
-      <div>
-        <div id="chart-title" class="font-bold text-cyan-400 text-sm">BTC / USDT</div>
-        <div id="chart-price" class="text-xl font-black">—</div>
+  <!-- ВКЛАДКА КАТАЛОГ -->
+  <section id="tab-catalog" class="space-y-4">
+    <!-- Категории -->
+    <div class="flex gap-2 overflow-x-auto pb-1">
+      <button onclick="setCategory('all')" class="cat-btn active" id="cat-all">Все пары</button>
+      <button onclick="setCategory('drops')" class="cat-btn" id="cat-drops">🔥 Дропы</button>
+      <button onclick="setCategory('lifestyle')" class="cat-btn" id="cat-lifestyle">⚡ Casual</button>
+    </div>
+
+    <div id="product-list" class="grid grid-cols-2 gap-3">
+      <!-- Товары подгружаются динамически -->
+    </div>
+  </section>
+
+  <!-- ВКЛАДКА КОРЗИНА -->
+  <section id="tab-cart" class="space-y-4 hidden">
+    <h2 class="text-xl font-bold">🛒 Ваша корзина</h2>
+    <div id="cart-items" class="space-y-2">
+      <p class="text-zinc-500 text-sm">Корзина пуста</p>
+    </div>
+    
+    <div id="checkout-form" class="card p-4 space-y-3 hidden">
+      <h3 class="font-bold text-sm text-zinc-300">Оформление доставки в Бишкек</h3>
+      <input id="order-phone" type="tel" class="inp" placeholder="Ваш телефон (+996 ...)">
+      <input id="order-address" type="text" class="inp" placeholder="Адрес (район, улица, дом)">
+      <button onclick="submitOrder()" class="btn-accent w-full bg-emerald-500 text-black">Подтвердить заказ</button>
+    </div>
+  </section>
+
+  <!-- ВКЛАДКА ГАРАНТИИ -->
+  <section id="tab-guarantee" class="space-y-4 hidden">
+    <div class="card p-4 space-y-3 text-xs leading-relaxed">
+      <h2 class="text-sm font-bold text-white">🔒 Безопасность и надежность</h2>
+      <p class="text-zinc-400">Мы работаем по модели дропшиппинга, доставляя эксклюзивные кроссовки напрямую со складов-партнеров. Это гарантирует лучшую цену в Бишкеке без лишних наценок.</p>
+      <div class="space-y-1.5 text-zinc-300 pt-2 font-medium">
+        <p>✅ Проверка качества перед отправкой</p>
+        <p>✅ Оплата при получении курьеру</p>
+        <p>✅ Поддержка клиентов в Telegram</p>
       </div>
-      <div id="tf-row" class="flex gap-1 text-xs">
-        <button class="tf px-2 py-1 rounded bg-slate-800" data-tf="1m" onclick="setTf('1m')">1м</button>
-        <button class="tf px-2 py-1 rounded bg-slate-800 on" data-tf="15m" onclick="setTf('15m')">15м</button>
-        <button class="tf px-2 py-1 rounded bg-slate-800" data-tf="1h" onclick="setTf('1h')">1ч</button>
-      </div>
     </div>
-    <div id="chart"></div>
-  </div>
-  <div class="card p-4 space-y-3">
-    <div class="flex justify-between text-sm"><span class="text-slate-400" data-i18n="held">У вас</span><b id="held">0</b></div>
-    <input id="trade-usdt" type="number" value="100" class="inp" placeholder="Сумма в USDT">
-    <button onclick="doTrade('buy')" class="btn w-full bg-emerald-600 hover:bg-emerald-500" data-i18n="buy">Купить</button>
-    <div class="grid grid-cols-2 gap-2">
-      <button onclick="doTrade('sell',50)" class="btn bg-rose-600/80">50%</button>
-      <button onclick="doTrade('sell',100)" class="btn bg-rose-600" data-i18n="sell_all">Всё</button>
+  </section>
+
+  <!-- АДМИН-ПАНЕЛЬ -->
+  <section id="tab-admin" class="space-y-4 hidden">
+    <div class="card p-4 space-y-3 border-emerald-500/50">
+      <h2 class="text-sm font-bold text-emerald-400">📱 Добавить новый товар</h2>
+      <input id="adm-title" class="inp" placeholder="Название модели">
+      <input id="adm-brand" class="inp" placeholder="Бренд (Nike, Adidas...)">
+      <input id="adm-price" type="number" class="inp" placeholder="Цена (сом)">
+      <input id="adm-old" type="number" class="inp" placeholder="Старая цена (необязательно)">
+      <input id="adm-img" class="inp" placeholder="Ссылка на картинку (URL)">
+      <select id="adm-cat" class="inp">
+        <option value="drops">🔥 Дроп</option>
+        <option value="lifestyle">⚡ Casual</option>
+      </select>
+      <button onclick="adminAddProduct()" class="btn-accent w-full bg-emerald-600 text-white">Опубликовать</button>
     </div>
-  </div>
-</section>
-
-<!-- ДУЭЛИ -->
-<section id="tab-duels" class="space-y-3 hidden">
-  <div class="card p-4 space-y-3">
-    <h2 class="text-lg font-bold" data-i18n="duels_title">⚔️ PvP Дуэли</h2>
-    <div class="grid grid-cols-4 gap-2" id="coin-picker">
-      <button onclick="setDuelCoin('BTC')" class="coin-btn p-2 rounded-xl card text-center border-cyan-500 border" data-coin="BTC"><div class="text-xs font-bold">BTC</div></button>
-      <button onclick="setDuelCoin('ETH')" class="coin-btn p-2 rounded-xl card text-center" data-coin="ETH"><div class="text-xs font-bold">ETH</div></button>
-      <button onclick="setDuelCoin('TON')" class="coin-btn p-2 rounded-xl card text-center" data-coin="TON"><div class="text-xs font-bold">TON</div></button>
-      <button onclick="setDuelCoin('SOL')" class="coin-btn p-2 rounded-xl card text-center" data-coin="SOL"><div class="text-xs font-bold">SOL</div></button>
+    
+    <h3 class="font-bold text-xs text-zinc-400">Заказы покупателей:</h3>
+    <div id="admin-orders-list" class="space-y-2 text-xs">
+      <p class="text-zinc-500">Загрузка заказов...</p>
     </div>
-    <input id="d-amount" type="number" value="50" class="inp" placeholder="Ставка USDT">
-    <div class="grid grid-cols-2 gap-3 pt-1">
-      <button onclick="createDuelQuick('up')" class="btn bg-emerald-600 py-4 text-center text-lg flex flex-col items-center"><span>🟢 РОСТ</span></button>
-      <button onclick="createDuelQuick('down')" class="btn bg-rose-600 py-4 text-center text-lg flex flex-col items-center"><span>🔴 ПАДЕНИЕ</span></button>
-    </div>
-  </div>
-  <h3 class="font-semibold text-slate-300 text-sm" data-i18n="open_duels">Открытые вызовы</h3>
-  <div id="duels-open" class="space-y-2"></div>
-  <h3 class="font-semibold text-slate-300 text-sm" data-i18n="my_duels">Мои дуэли</h3>
-  <div id="duels-mine" class="space-y-2"></div>
-</section>
-
-<!-- ФУТБОЛ -->
-<section id="tab-football" class="space-y-3 hidden">
-  <h2 class="text-xl font-bold" data-i18n="fb_title">⚽ Футбольные матчи</h2>
-  <div id="fb-list" class="space-y-2"></div>
-</section>
-
-<!-- МИР ТОКЕНОВ -->
-<section id="tab-world" class="space-y-3 hidden">
-  <h2 class="text-xl font-bold" data-i18n="world_title">🌐 Мир токенов</h2>
-  <div class="card p-4 space-y-2">
-    <h3 class="font-semibold text-cyan-400 text-sm" data-i18n="launch_title">Запустить токен · 100 USDT</h3>
-    <input id="c-name" class="inp" placeholder="Название">
-    <input id="c-sym" class="inp" placeholder="Тикер (3-6 букв)">
-    <button onclick="createCoin()" class="btn w-full bg-emerald-600" data-i18n="launch_btn">Запустить</button>
-  </div>
-  <div id="coins" class="space-y-2"></div>
-</section>
-
-<!-- УЧЁБА -->
-<section id="tab-learn" class="space-y-3 hidden">
-  <h2 class="text-xl font-bold" data-i18n="learn_title">🎓 Академия</h2>
-  <div id="lessons" class="space-y-2"></div>
-</section>
-
-<!-- ДРУЗЬЯ (РЕФЕРАЛЫ) -->
-<section id="tab-friends" class="space-y-3 hidden">
-  <div class="card p-5 text-center space-y-3">
-    <div class="text-4xl">🤝</div>
-    <h2 class="text-xl font-bold" data-i18n="ref_title">Приглашай друзей</h2>
-    <p class="text-xs text-slate-400" data-i18n="ref_desc">Зарабатывай +50 USDT за каждого друга!</p>
-    <button onclick="copyRefLink()" class="btn w-full bg-cyan-600" data-i18n="ref_btn">🔗 Скопировать ссылку</button>
-  </div>
-  <div class="card p-4 space-y-2">
-    <div class="flex justify-between text-xs"><span class="text-slate-400" data-i18n="ref_count">Приглашено</span><b id="ref-count" class="text-cyan-400">0</b></div>
-    <div class="flex justify-between text-xs"><span class="text-slate-400" data-i18n="ref_earned">Заработано</span><b id="ref-earned" class="text-emerald-400">0 USDT</b></div>
-  </div>
-</section>
-
-<!-- ПРОФИЛЬ -->
-<section id="tab-profile" class="space-y-3 hidden">
-  <div class="card p-4 space-y-3 flex justify-between items-center">
-    <div><div class="text-xs text-slate-400" data-i18n="worth">Общий капитал</div><div id="p-worth" class="text-2xl font-black text-emerald-400">—</div></div>
-    <button onclick="claimDaily()" class="btn bg-amber-500 text-slate-900" data-i18n="daily">🎁 Награда</button>
-  </div>
-  <h3 class="font-semibold text-slate-300 text-sm" data-i18n="top_title">🏆 Таблица лидеров</h3>
-  <div id="p-top" class="space-y-1"></div>
-</section>
+  </section>
 
 </main>
 
-<nav class="fixed bottom-0 inset-x-0 bg-slate-900/95 backdrop-blur border-t border-slate-800 grid grid-cols-7 p-1 z-50 text-[10px]">
-  <button onclick="switchTab('market')" class="nav font-bold flex flex-col items-center text-cyan-400">📈 <span data-i18n="tab_market">Рынок</span></button>
-  <button onclick="switchTab('duels')" class="nav font-bold flex flex-col items-center text-slate-500">⚔️ <span data-i18n="tab_duels">Дуэли</span></button>
-  <button onclick="switchTab('football')" class="nav font-bold flex flex-col items-center text-slate-500">⚽ <span data-i18n="tab_football">Футбол</span></button>
-  <button onclick="switchTab('world')" class="nav font-bold flex flex-col items-center text-slate-500">🌐 <span data-i18n="tab_world">Мир</span></button>
-  <button onclick="switchTab('learn')" class="nav font-bold flex flex-col items-center text-slate-500">🎓 <span data-i18n="tab_learn">Учёба</span></button>
-  <button onclick="switchTab('friends')" class="nav font-bold flex flex-col items-center text-slate-500">🤝 <span data-i18n="tab_friends">Друзья</span></button>
-  <button onclick="switchTab('profile')" class="nav font-bold flex flex-col items-center text-slate-500">👤 <span data-i18n="tab_profile">Профиль</span></button>
+<nav class="fixed bottom-0 inset-x-0 bg-black/95 backdrop-blur border-t border-zinc-900 grid grid-cols-4 p-2 z-50 text-[10px] text-center">
+  <button onclick="switchTab('catalog')" class="font-bold text-white py-1 flex flex-col items-center"><span class="text-base">👟</span>Каталог</button>
+  <button onclick="switchTab('cart')" class="font-bold text-zinc-500 py-1 flex flex-col items-center"><span class="text-base">🛒</span>Корзина</button>
+  <button onclick="switchTab('guarantee')" class="font-bold text-zinc-500 py-1 flex flex-col items-center"><span class="text-base">🛡️</span>Гарантии</button>
+  <button id="nav-admin" onclick="switchTab('admin')" class="font-bold text-emerald-400 py-1 flex flex-col items-center hidden"><span class="text-base">⚙️</span>Админка</button>
 </nav>
 
-<div id="toast" class="fixed top-20 inset-x-4 max-w-md mx-auto z-[70] hidden"></div>
-
 <script>
-const API = "https://prediction-arena-backend.onrender.com";
+const API = window.location.origin;
 const tg = window.Telegram?.WebApp;
 tg?.ready(); tg?.expand();
 const $ = id => document.getElementById(id);
 
-let me = null, market = {}, sel = {sym:'BTC', tf:'15m'}, duelCoin = 'BTC';
-
-const i18n = {
-  ru: {
-    held: "У вас", buy: "Купить", sell_all: "Продать всё",
-    duels_title: "⚔️ PvP Дуэли", open_duels: "Открытые вызовы", my_duels: "Мои дуэли",
-    fb_title: "⚽ Футбольные матчи", world_title: "🌐 Мир токенов", launch_title: "Запустить токен · 100 USDT", launch_btn: "Запустить",
-    learn_title: "🎓 Академия", ref_title: "Приглашай друзей", ref_desc: "Зарабатывай +50 USDT за каждого друга!",
-    ref_btn: "🔗 Скопировать реферальную ссылку", ref_count: "Приглашено", ref_earned: "Заработано",
-    worth: "Общий капитал", daily: "🎁 Награда", top_title: "🏆 Таблица лидеров",
-    tab_market: "Рынок", tab_duels: "Дуэли", tab_football: "Футбол", tab_world: "Мир", tab_learn: "Учёба", tab_friends: "Друзья", tab_profile: "Профиль"
-  },
-  en: {
-    held: "Holdings", buy: "Buy", sell_all: "Sell All",
-    duels_title: "⚔️ PvP Duels", open_duels: "Open Challenges", my_duels: "My Duels",
-    fb_title: "⚽ Football Matches", world_title: "🌐 Token World", launch_title: "Launch Token · 100 USDT", launch_btn: "Launch",
-    learn_title: "🎓 Academy", ref_title: "Invite Friends", ref_desc: "Earn +50 USDT for each friend!",
-    ref_btn: "🔗 Copy Referral Link", ref_count: "Invited", ref_earned: "Earned",
-    worth: "Total Net Worth", daily: "🎁 Daily", top_title: "🏆 Leaderboard",
-    tab_market: "Market", tab_duels: "Duels", tab_football: "Football", tab_world: "World", tab_learn: "Learn", tab_friends: "Friends", tab_profile: "Profile"
-  }
-};
+let allProducts = [];
+let currentCategory = 'all';
+let cart = [];
+let selectedSizes = {};
 
 async function api(path, body) {
   const res = await fetch(API + path, {
     method: body ? 'POST' : 'GET',
-    headers: {'Content-Type':'application/json', 'X-Init-Data': tg?.initData || '', 'X-Test-User': 'web_user'},
+    headers: {'Content-Type':'application/json', 'X-Init-Data': tg?.initData || ''},
     body: body ? JSON.stringify(body) : undefined
   });
   return await res.json();
 }
 
-async function refreshMe() {
+async function initApp() {
   try {
-    me = await api('/api/me');
-    $('username').textContent = me.username;
-    $('level').textContent = me.level.name;
-    applyLang(me.lang || 'ru');
-    applyProMode(me.pro_mode || 0);
-    updateHeld();
-  } catch(e){}
+    const me = await api('/api/me');
+    if (me.is_admin) $('nav-admin').classList.remove('hidden');
+  } catch(e) {}
+  loadCatalog();
 }
 
-function applyLang(lang) {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const k = el.dataset.i18n;
-    if (i18n[lang]?.[k]) el.textContent = i18n[lang][k];
-  });
-  $('lang-select').value = lang;
-}
-
-function applyProMode(isPro) {
-  document.body.classList.toggle('pro-theme', isPro === 1);
-  $('pro-status').textContent = isPro === 1 ? 'CRYPTO ARENA PRO' : 'OFF';
-  $('pro-badge.className') = isPro === 1 ? 'px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 border border-amber-500 text-amber-400' : 'px-3 py-1 rounded-full text-xs font-black bg-slate-800 border border-slate-700 text-slate-300';
-}
-
-async function toggleProMode() {
-  const next = me.pro_mode === 1 ? 0 : 1;
-  await api('/api/user/settings', {pro_mode: next});
-  me.pro_mode = next;
-  applyProMode(next);
-}
-
-async function changeLang(lang) {
-  await api('/api/user/settings', {lang});
-  me.lang = lang;
-  applyLang(lang);
-}
-
-async function changeName() {
-  const n = prompt("Новое имя:", me?.username || "");
-  if (n) { await api('/api/user/update_name', {username: n}); refreshMe(); }
-}
-
-const chart = LightweightCharts.createChart($('chart'), {
-  height: 240, width: $('chart').clientWidth || 320,
-  layout: {background:{color:'transparent'}, textColor:'#94a3b8'},
-  grid: {vertLines:{color:'#1e293b'}, horzLines:{color:'#1e293b'}}
-});
-const candle = chart.addCandlestickSeries();
-
-function setTf(tf) {
-  sel.tf = tf;
-  document.querySelectorAll('.tf').forEach(b => b.classList.toggle('on', b.dataset.tf === tf));
-  loadChart();
-}
-
-async function loadMarketTab() {
-  market = await api('/api/market');
-  $('chips').innerHTML = Object.entries(market).map(([s,i]) => `<button onclick="sel.sym='${s}';loadChart()" class="chip ${s===sel.sym?'on':''}"><div class="font-bold">${s}</div><div class="text-xs">$${i.price}</div></button>`).join('');
-  loadChart();
-}
-
-async function loadChart() {
+async function loadCatalog() {
   try {
-    const k = await api(`/api/klines/${sel.sym}?interval=${sel.tf}`);
-    candle.setData(k);
-    chart.timeScale().fitContent();
-    const m = market[sel.sym];
-    if(m) $('chart-price').textContent = `$${m.price}`;
-  } catch(e){}
+    allProducts = await api('/api/products');
+    renderProducts();
+  } catch(e) {}
 }
 
-function updateHeld() {
-  const h = me?.holdings.find(x => x.symbol === sel.sym);
-  $('held').textContent = h ? `${h.amount.toFixed(4)} ${sel.sym}` : `0 ${sel.sym}`;
+function setCategory(cat) {
+  currentCategory = cat;
+  ['all','drops','lifestyle'].forEach(c => $(`cat-${c}`).classList.toggle('active', c === cat));
+  renderProducts();
 }
 
-async function doTrade(side, pct=0) {
-  const r = await api('/api/trade', {symbol: sel.sym, side, usdt: parseFloat($('trade-usdt').value||0), pct});
-  alert(r.msg || 'Успешно');
-  refreshMe();
+function renderProducts() {
+  const filtered = currentCategory === 'all' ? allProducts : allProducts.filter(p => p.category === currentCategory);
+  $('product-list').innerHTML = filtered.map(p => {
+    const currentSize = selectedSizes[p.id] || p.sizes[0];
+    return `
+      <div class="card p-3 space-y-2 flex flex-col justify-between">
+        <div>
+          <img src="${p.image}" class="w-full h-32 object-cover rounded-lg bg-zinc-900" alt="">
+          <span class="text-[9px] text-zinc-500 uppercase font-bold mt-2 block">${p.brand}</span>
+          <h4 class="font-bold text-xs line-clamp-1 text-zinc-200">${p.title}</h4>
+          <div class="flex items-center gap-2 mt-1">
+            <span class="text-xs font-black text-emerald-400">${p.price} сом</span>
+            ${p.old_price ? `<span class="text-[9px] text-zinc-600 line-through">${p.old_price}</span>` : ''}
+          </div>
+        </div>
+        <div class="space-y-2 pt-1">
+          <div class="flex flex-wrap gap-1">
+            ${p.sizes.map(s => `<button onclick="selectSize(${p.id}, '${s}')" class="size-btn ${currentSize === s ? 'selected' : ''}">${s}</button>`).join('')}
+          </div>
+          <button onclick='addToCart(${JSON.stringify(p)})' class="btn-accent w-full text-xs py-2 bg-zinc-800 text-white">В корзину</button>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
-function setDuelCoin(coin) {
-  duelCoin = coin;
-  document.querySelectorAll('.coin-btn').forEach(b => {
-    b.classList.toggle('border-cyan-500', b.dataset.coin === coin);
-    b.classList.toggle('border', b.dataset.coin === coin);
-  });
+function selectSize(productId, size) {
+  selectedSizes[productId] = size;
+  renderProducts();
 }
 
-async function createDuelQuick(pred) {
-  const amt = parseFloat($('d-amount').value || 10);
-  const r = await api('/api/duels/create', {coin: duelCoin, prediction: pred, amount: amt, duration: 300});
-  alert(r.message || 'Создано');
-  refreshMe(); loadDuels();
+function addToCart(product) {
+  const chosenSize = selectedSizes[product.id] || product.sizes[0];
+  const existing = cart.find(i => i.id === product.id && i.size === chosenSize);
+  if (existing) existing.qty += 1;
+  else cart.push({...product, qty: 1, size: chosenSize});
+  
+  $('cart-badge').textContent = `🛒 ${cart.reduce((a,c) => a + c.qty, 0)}`;
+  alert(`Добавлено (Размер: ${chosenSize})`);
+  updateCartUI();
 }
 
-async function loadDuels() {
-  const data = await api('/api/duels');
-  $('duels-open').innerHTML = (data.open||[]).map(d => `<div class="card p-3 flex justify-between items-center"><div><b>${d.creator} · ${d.coin}</b><div class="text-xs text-slate-400">${d.amount} USDT</div></div><button onclick="joinDuel(${d.id})" class="btn bg-emerald-600">Принять</button></div>`).join('') || '<div class="text-xs text-slate-500">Нет вызовов</div>';
-  $('duels-mine').innerHTML = (data.mine||[]).map(d => `<div class="card p-3"><b>${d.coin} · ${d.amount} USDT</b><div class="text-xs text-slate-400">Статус: ${d.status}</div></div>`).join('') || '<div class="text-xs text-slate-500">Нет дуэлей</div>';
+function updateCartUI() {
+  if (cart.length === 0) {
+    $('cart-items').innerHTML = `<p class="text-zinc-500 text-sm">Ваша корзина пуста</p>`;
+    $('checkout-form').classList.add('hidden');
+    return;
+  }
+  $('cart-items').innerHTML = cart.map((i, idx) => `
+    <div class="card p-3 flex justify-between items-center text-xs">
+      <div>
+        <p class="font-bold text-zinc-200">${i.title}</p>
+        <p class="text-zinc-400">${i.price} сом | Размер: <b class="text-white">${i.size}</b> | Кол-во: ${i.qty}</p>
+      </div>
+      <button onclick="cart.splice(${idx},1);updateCartUI();" class="text-red-500 font-bold p-1">Удалить</button>
+    </div>
+  `).join('');
+  $('checkout-form').classList.remove('hidden');
 }
 
-async function joinDuel(id) {
-  await api('/api/duels/join', {duel_id: id});
-  refreshMe(); loadDuels();
+async function submitOrder() {
+  const phone = $('order-phone').value;
+  const address = $('order-address').value;
+  if (!phone || !address) {
+    alert('Укажите телефон и адрес доставки!');
+    return;
+  }
+  const res = await api('/api/orders/create', {phone, address, items: cart});
+  if (res.success) {
+    alert(res.message);
+    cart = [];
+    $('cart-badge').textContent = '🛒 0';
+    updateCartUI();
+    switchTab('catalog');
+  } else alert('Ошибка оформления');
 }
 
-async function loadFootball() {
-  const list = await api('/api/football/events');
-  $('fb-list').innerHTML = (list||[]).map(e => `<div class="card p-3"><b>${e.home} — ${e.away}</b><button onclick="betFb('${e.id}')" class="btn bg-slate-800 w-full mt-2">Поставить 50 USDT</button></div>`).join('') || '<div class="text-xs text-slate-500">Нет матчей</div>';
+async function adminAddProduct() {
+  const title = $('adm-title').value;
+  const brand = $('adm-brand').value;
+  const price = $('adm-price').value;
+  const old_price = $('adm-old').value || 0;
+  const image = $('adm-img').value;
+  const category = $('adm-cat').value;
+  if(!title || !price || !image) {
+    alert('Заполните название, цену и картинку!');
+    return;
+  }
+  const res = await api('/api/admin/add_product', {title, brand, price, old_price, image, category, sizes: "40,41,42,43,44,45"});
+  if(res.success) {
+    alert(res.message);
+    loadCatalog();
+  }
 }
 
-async function betFb(id) {
-  await api('/api/football/bet', {event_id: id, pick: '1', amount: 50});
-  alert('Ставка принята!'); refreshMe();
-}
-
-async function loadCoins() {
-  const coins = await api('/api/coins');
-  $('coins').innerHTML = (coins||[]).map(c => `<div class="card p-3 flex justify-between"><div><b>${c.name} (${c.symbol})</b></div><div>$${c.price}</div></div>`).join('');
-}
-
-async function createCoin() {
-  await api('/api/coins/create', {name: $('c-name').value, symbol: $('c-sym').value});
-  loadCoins(); refreshMe();
-}
-
-async function loadLessons() {
-  const l = await api('/api/lessons');
-  $('lessons').innerHTML = (l||[]).map(x => `<div class="card p-3 flex justify-between items-center"><div><b>${x.title}</b><div class="text-xs text-slate-400">+${x.usdt} USDT</div></div><button onclick="completeLesson('${x.id}')" class="btn bg-cyan-600">Сдать</button></div>`).join('');
-}
-
-async function completeLesson(id) {
-  await api('/api/lessons/complete', {lesson_id: id, answer: 0});
-  refreshMe(); loadLessons();
-}
-
-async function loadFriends() {
-  const d = await api('/api/friends');
-  $('ref-count').textContent = d.total;
-  $('ref-earned').textContent = d.earned + ' USDT';
-}
-
-function copyRefLink() {
-  navigator.clipboard.writeText(`https://t.me/your_bot?start=ref_${me.id}`);
-  alert('Реферальная ссылка скопирована!');
-}
-
-async function loadProfile() {
-  await refreshMe();
-  $('p-worth').textContent = '$' + me.networth.toFixed(2);
-  const top = await api('/api/leaderboard');
-  $('p-top').innerHTML = (top||[]).map((r,i) => `<div class="flex justify-between text-sm px-3 py-2 rounded ${r.me?'bg-cyan-500/10':''}"><span>${i+1}. ${r.name}</span><b>$${r.worth.toFixed(0)}</b></div>`).join('');
-}
-
-async function claimDaily() {
-  const r = await api('/api/daily', {});
-  alert(`🎁 +${r.reward} USDT`);
-  loadProfile();
+async function loadAdminOrders() {
+  try {
+    const orders = await api('/api/admin/orders');
+    $('admin-orders-list').innerHTML = orders.map(o => `
+      <div class="card p-3 space-y-1">
+        <p class="font-bold text-white">Заказ #${o.id} — ${o.total} сом</p>
+        <p class="text-zinc-400">Клиент: ${o.username} | Тел: <b>${o.phone}</b></p>
+        <p class="text-zinc-400">Адрес: ${o.address}</p>
+        <p class="text-zinc-300 pt-1">Товары: ${o.summary}</p>
+        <p class="text-emerald-400 font-semibold pt-1">Статус: ${o.status}</p>
+      </div>
+    `).join('') || '<p class="text-zinc-500">Нет заказов</p>';
+  } catch(e) {}
 }
 
 function switchTab(tab) {
-  ['market','duels','football','world','learn','friends','profile'].forEach(t => $('tab-' + t).classList.toggle('hidden', t !== tab));
-  if(tab === 'market') loadMarketTab();
-  if(tab === 'duels') loadDuels();
-  if(tab === 'football') loadFootball();
-  if(tab === 'world') loadCoins();
-  if(tab === 'learn') loadLessons();
-  if(tab === 'friends') loadFriends();
-  if(tab === 'profile') loadProfile();
+  ['catalog','cart','guarantee','admin'].forEach(t => $('tab-' + t).classList.toggle('hidden', t !== tab));
+  if(tab === 'admin') loadAdminOrders();
+  window.scrollTo(0,0);
 }
 
-refreshMe();
-switchTab('market');
+initApp();
 </script>
 </body>
 </html>
