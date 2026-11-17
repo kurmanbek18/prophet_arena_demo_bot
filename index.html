@@ -2,267 +2,351 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>SNEAKER DROP | Бишкек</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Sneaker Drop · Бишкек</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap" rel="stylesheet">
 <style>
-  body { background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
-  .card { background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 1rem; }
-  .btn-accent { background: #fff; color: #000; font-weight: 700; border-radius: 0.75rem; padding: 0.75rem; transition: 0.2s; }
-  .btn-accent:active { transform: scale(0.97); }
-  .inp { width: 100%; background: #121212; border: 1px solid #262626; border-radius: 0.75rem; padding: 0.75rem; color: #fff; outline: none; font-size: 14px; }
-  .size-btn { border: 1px solid #333; border-radius: 0.5rem; padding: 5px 8px; font-size: 11px; font-weight: bold; background: #111; cursor: pointer; }
-  .size-btn.selected { border-color: #fff; background: #fff; color: #000; }
-  .cat-btn { background: #111; border: 1px solid #222; border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: bold; color: #888; cursor: pointer; }
-  .cat-btn.active { background: #fff; color: #000; border-color: #fff; }
+:root{--ink:#0f1012;--bg:#ecedef;--card:#fff;--line:#dcdde0;--mut:#6b6f76;--sig:#ff4a1c;--ok:#16a34a}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font:15px/1.4 'Archivo',-apple-system,'Segoe UI',sans-serif;padding-bottom:84px}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.hide{display:none!important}
+header{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-stretch:125%;font-weight:800;letter-spacing:.02em;font-size:17px}
+.sub{font-size:11px;color:#a8abb2;margin-top:1px}
+.cartpill{background:var(--sig);color:#fff;font-weight:700;border-radius:99px;padding:6px 13px;font-size:13px}
+main{max-width:480px;margin:0 auto;padding:14px 14px}
+h2{font-stretch:115%;font-weight:800;font-size:22px;margin:4px 0 12px}
+.inp{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 13px;font:inherit;color:var(--ink);outline:none}
+.inp:focus{border-color:var(--ink)}
+textarea.inp{min-height:76px;resize:vertical}
+label{display:block;font-size:12px;font-weight:600;color:var(--mut);margin:10px 0 4px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 12px;scrollbar-width:none}
+.chip{flex:none;padding:8px 15px;border-radius:99px;background:#fff;border:1.5px solid var(--line);font-weight:600;font-size:13px}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pc{background:var(--card);border-radius:16px;overflow:hidden;text-align:left;display:block;width:100%}
+.pc .ph{position:relative;aspect-ratio:1/1;background:#e4e5e8}
+.pc img,.sheet .big{width:100%;height:100%;object-fit:cover;display:block}
+.pc .b{padding:10px 11px 12px}
+.br{font-size:11px;color:var(--mut);font-weight:600}
+.tt{font-weight:700;font-size:14px;line-height:1.25;margin:2px 0 6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:35px}
+.pr{font-weight:800;font-size:15px}.old{color:var(--mut);text-decoration:line-through;font-size:12px;margin-left:6px;font-weight:500}
+.tag{position:absolute;left:8px;top:8px;background:var(--sig);color:#fff;font-weight:800;font-size:11px;padding:3px 8px;border-radius:8px}
+.btn{display:block;width:100%;padding:14px;border-radius:13px;font-weight:700;text-align:center;background:var(--ink);color:#fff}
+.btn.sig{background:var(--sig)}.btn.wa{background:#25a244}.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn.sm{padding:9px 12px;font-size:13px;border-radius:10px;width:auto;display:inline-block}
+.btn:disabled{opacity:.5}
+.card{background:#fff;border-radius:16px;padding:14px;margin-bottom:10px}
+.row{display:flex;gap:10px;align-items:center}.sp{justify-content:space-between}
+.thumb{width:64px;height:64px;border-radius:12px;object-fit:cover;background:#e4e5e8;flex:none}
+.qty{display:flex;align-items:center;gap:2px;background:var(--bg);border-radius:10px}
+.qty button{width:32px;height:32px;font-size:18px;font-weight:700}.qty span{min-width:22px;text-align:center;font-weight:700}
+.sizes{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px}
+.sz{min-width:50px;padding:10px 12px;border-radius:11px;border:1.5px solid var(--line);font-weight:700;background:#fff}
+.sz.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;color:#fff}
+.muted{color:var(--mut);font-size:13px}.empty{text-align:center;color:var(--mut);padding:40px 10px}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:#fff;border-top:1px solid var(--line);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;font-weight:600;color:var(--mut);padding:5px 0}
+nav button i{font-style:normal;font-size:20px}nav button.on{color:var(--ink)}nav button.on i{filter:none}
+.ov{position:fixed;inset:0;background:rgba(15,16,18,.55);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:480px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.sheet .big{border-radius:16px;aspect-ratio:1/1;margin-bottom:12px}
+.x{float:right;width:34px;height:34px;border-radius:50%;background:#fff;font-size:16px;font-weight:700}
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:90;max-width:90%;text-align:center;opacity:0;pointer-events:none;transition:.2s}
+#toast.show{opacity:1}
+.steps{counter-reset:s}.steps li{list-style:none;position:relative;padding-left:34px;margin:12px 0}
+.steps li:before{counter-increment:s;content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;font-size:13px;display:grid;place-items:center}
+.qr{width:200px;height:200px;object-fit:contain;background:#fff;border-radius:14px;display:block;margin:10px auto}
+.sk{background:linear-gradient(90deg,#e4e5e8,#f1f2f4,#e4e5e8);background-size:200%;animation:sh 1.2s infinite;border-radius:16px;aspect-ratio:3/4}
+@keyframes sh{to{background-position:-200% 0}}
+.tabs{display:flex;background:#fff;border-radius:12px;padding:4px;margin-bottom:12px}
+.tabs button{flex:1;padding:9px;border-radius:9px;font-weight:700;font-size:13px;color:var(--mut)}.tabs button.on{background:var(--ink);color:#fff}
+.pv{width:100%;max-height:200px;object-fit:contain;border-radius:12px;background:#fff;margin-top:8px}
 </style>
 </head>
-<body class="pb-28">
+<body>
 
-<header class="p-4 border-b border-zinc-900 sticky top-0 bg-black/95 backdrop-blur z-40 flex justify-between items-center">
-  <div>
-    <h1 class="font-black tracking-wider text-base">SNEAKER <span class="text-zinc-400">BISHKEK</span></h1>
-    <p class="text-[10px] text-emerald-400 font-semibold">🛡️ Лимитированные коллекции · Без предоплаты</p>
-  </div>
-  <div class="text-right">
-    <div id="cart-badge" class="text-xs font-bold text-zinc-300 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">🛒 0</div>
-  </div>
+<header>
+  <div><div class="logo" id="shopname">SNEAKER DROP</div><div class="sub">Кроссовки с доставкой по Бишкеку</div></div>
+  <button class="cartpill" id="pill" onclick="show('cart')">0</button>
 </header>
 
-<main class="p-4 max-w-md mx-auto space-y-4">
-
-  <!-- ВКЛАДКА КАТАЛОГ -->
-  <section id="tab-catalog" class="space-y-4">
-    <!-- Категории -->
-    <div class="flex gap-2 overflow-x-auto pb-1">
-      <button onclick="setCategory('all')" class="cat-btn active" id="cat-all">Все пары</button>
-      <button onclick="setCategory('drops')" class="cat-btn" id="cat-drops">🔥 Дропы</button>
-      <button onclick="setCategory('lifestyle')" class="cat-btn" id="cat-lifestyle">⚡ Casual</button>
-    </div>
-
-    <div id="product-list" class="grid grid-cols-2 gap-3">
-      <!-- Товары подгружаются динамически -->
-    </div>
+<main>
+  <section id="v-catalog">
+    <input id="q" class="inp" placeholder="Поиск: Nike, Jordan, 42…" oninput="S.q=this.value;renderCatalog()">
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="grid"></div>
   </section>
 
-  <!-- ВКЛАДКА КОРЗИНА -->
-  <section id="tab-cart" class="space-y-4 hidden">
-    <h2 class="text-xl font-bold">🛒 Ваша корзина</h2>
-    <div id="cart-items" class="space-y-2">
-      <p class="text-zinc-500 text-sm">Корзина пуста</p>
-    </div>
-    
-    <div id="checkout-form" class="card p-4 space-y-3 hidden">
-      <h3 class="font-bold text-sm text-zinc-300">Оформление доставки в Бишкек</h3>
-      <input id="order-phone" type="tel" class="inp" placeholder="Ваш телефон (+996 ...)">
-      <input id="order-address" type="text" class="inp" placeholder="Адрес (район, улица, дом)">
-      <button onclick="submitOrder()" class="btn-accent w-full bg-emerald-500 text-black">Подтвердить заказ</button>
-    </div>
-  </section>
-
-  <!-- ВКЛАДКА ГАРАНТИИ -->
-  <section id="tab-guarantee" class="space-y-4 hidden">
-    <div class="card p-4 space-y-3 text-xs leading-relaxed">
-      <h2 class="text-sm font-bold text-white">🔒 Безопасность и надежность</h2>
-      <p class="text-zinc-400">Мы работаем по модели дропшиппинга, доставляя эксклюзивные кроссовки напрямую со складов-партнеров. Это гарантирует лучшую цену в Бишкеке без лишних наценок.</p>
-      <div class="space-y-1.5 text-zinc-300 pt-2 font-medium">
-        <p>✅ Проверка качества перед отправкой</p>
-        <p>✅ Оплата при получении курьеру</p>
-        <p>✅ Поддержка клиентов в Telegram</p>
+  <section id="v-cart" class="hide">
+    <h2>Корзина</h2>
+    <div id="cart-items"></div>
+    <div id="checkout" class="hide">
+      <div class="card">
+        <div class="row sp"><b>Итого</b><b id="cart-total" style="font-size:19px"></b></div>
+        <label>Телефон (WhatsApp)</label><input id="o-phone" type="tel" class="inp" placeholder="+996 ___ ___ ___">
+        <label>Адрес доставки в Бишкеке</label><input id="o-addr" class="inp" placeholder="Район, улица, дом, кв.">
+        <label>Комментарий (необязательно)</label><input id="o-comm" class="inp" placeholder="Удобное время, пожелания">
       </div>
+      <button class="btn sig" id="o-btn" onclick="submitOrder()">Оформить заказ</button>
+      <p class="muted" style="margin-top:10px;text-align:center">Оплата не списывается сейчас. Менеджер подтвердит наличие и размер и свяжется с вами.</p>
     </div>
   </section>
 
-  <!-- АДМИН-ПАНЕЛЬ -->
-  <section id="tab-admin" class="space-y-4 hidden">
-    <div class="card p-4 space-y-3 border-emerald-500/50">
-      <h2 class="text-sm font-bold text-emerald-400">📱 Добавить новый товар</h2>
-      <input id="adm-title" class="inp" placeholder="Название модели">
-      <input id="adm-brand" class="inp" placeholder="Бренд (Nike, Adidas...)">
-      <input id="adm-price" type="number" class="inp" placeholder="Цена (сом)">
-      <input id="adm-old" type="number" class="inp" placeholder="Старая цена (необязательно)">
-      <input id="adm-img" class="inp" placeholder="Ссылка на картинку (URL)">
-      <select id="adm-cat" class="inp">
-        <option value="drops">🔥 Дроп</option>
-        <option value="lifestyle">⚡ Casual</option>
-      </select>
-      <button onclick="adminAddProduct()" class="btn-accent w-full bg-emerald-600 text-white">Опубликовать</button>
-    </div>
-    
-    <h3 class="font-bold text-xs text-zinc-400">Заказы покупателей:</h3>
-    <div id="admin-orders-list" class="space-y-2 text-xs">
-      <p class="text-zinc-500">Загрузка заказов...</p>
-    </div>
+  <section id="v-orders" class="hide"><h2>Мои заказы</h2><div id="orders-list"></div></section>
+
+  <section id="v-info" class="hide">
+    <h2>Как мы работаем</h2>
+    <div class="card"><ol class="steps">
+      <li><b>Выбираете пару и размер</b><br><span class="muted">Оформляете заказ прямо здесь, это ни к чему не обязывает.</span></li>
+      <li><b>Подтверждаем наличие</b><br><span class="muted">Менеджер пишет вам в WhatsApp и сверяет модель и размер.</span></li>
+      <li><b>Оплата</b><br><span class="muted" id="i-pay"></span></li>
+      <li><b>Доставка</b><br><span class="muted" id="i-del"></span></li>
+    </ol></div>
+    <button class="btn wa" onclick="openWA('Здравствуйте! Хочу задать вопрос по кроссовкам.')">Написать менеджеру в WhatsApp</button>
   </section>
 
+  <section id="v-admin" class="hide">
+    <div class="tabs"><button id="at-orders" onclick="adminTab('orders')">Заказы</button><button id="at-products" onclick="adminTab('products')">Товары</button><button id="at-settings" onclick="adminTab('settings')">Настройки</button></div>
+    <div id="admin-body"></div>
+  </section>
 </main>
 
-<nav class="fixed bottom-0 inset-x-0 bg-black/95 backdrop-blur border-t border-zinc-900 grid grid-cols-4 p-2 z-50 text-[10px] text-center">
-  <button onclick="switchTab('catalog')" class="font-bold text-white py-1 flex flex-col items-center"><span class="text-base">👟</span>Каталог</button>
-  <button onclick="switchTab('cart')" class="font-bold text-zinc-500 py-1 flex flex-col items-center"><span class="text-base">🛒</span>Корзина</button>
-  <button onclick="switchTab('guarantee')" class="font-bold text-zinc-500 py-1 flex flex-col items-center"><span class="text-base">🛡️</span>Гарантии</button>
-  <button id="nav-admin" onclick="switchTab('admin')" class="font-bold text-emerald-400 py-1 flex flex-col items-center hidden"><span class="text-base">⚙️</span>Админка</button>
+<nav>
+  <button id="n-catalog" onclick="show('catalog')"><i>👟</i>Каталог</button>
+  <button id="n-cart" onclick="show('cart')"><i>🛒</i>Корзина</button>
+  <button id="n-orders" onclick="show('orders')"><i>📦</i>Заказы</button>
+  <button id="n-info" onclick="show('info')"><i>🛡️</i>Гарантии</button>
+  <button id="n-admin" class="hide" onclick="show('admin')"><i>⚙️</i>Админка</button>
 </nav>
 
+<div class="ov hide" id="ov" onclick="if(event.target===this)closeSheet()"><div class="sheet" id="sheet"></div></div>
+<div id="toast"></div>
+
 <script>
-const API = window.location.origin;
 const tg = window.Telegram?.WebApp;
-tg?.ready(); tg?.expand();
+try { tg?.ready(); tg?.expand(); tg?.setHeaderColor('#0f1012'); tg?.setBackgroundColor('#ecedef'); } catch (e) {}
 const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => Math.round(n).toLocaleString('ru-RU') + ' сом';
+const CATS = [['all','Все'],['drops','🔥 Дропы'],['lifestyle','⚡ Casual'],['running','🏃 Бег']];
+const STATUS = {new:['🆕 Новый','#2563eb'],confirmed:['✅ Подтверждён','#0d9488'],paid:['💰 Оплачен','#16a34a'],shipped:['🚚 Отправлен','#9333ea'],done:['🎉 Доставлен','#475569'],cancel:['❌ Отменён','#dc2626']};
+let saved = []; try { saved = JSON.parse(localStorage.getItem('cart') || '[]'); } catch (e) {}
+const S = {cfg:{}, products:[], cat:'all', q:'', cart:saved, admin:false, authed:false, picked:{}, view:'catalog', atab:'orders', ofilter:'all', aprods:[], aorders:[]};
 
-let allProducts = [];
-let currentCategory = 'all';
-let cart = [];
-let selectedSizes = {};
+async function api(path, body, method) {
+  const r = await fetch(path, {method: method || (body ? 'POST' : 'GET'), headers: {'Content-Type':'application/json','X-Init-Data': tg?.initData || ''}, body: body ? JSON.stringify(body) : undefined});
+  let d = {}; try { d = await r.json(); } catch (e) {}
+  if (!r.ok) throw new Error(typeof d.detail === 'string' ? d.detail : 'Ошибка ' + r.status);
+  return d;
+}
+let tt; function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2200); }
+const tap = () => { try { tg?.HapticFeedback?.impactOccurred('light'); } catch (e) {} };
+const openLink = u => tg?.openLink ? tg.openLink(u) : window.open(u, '_blank');
+const openWA = text => { if (!S.cfg.whatsapp) return toast('WhatsApp пока не настроен'); openLink(`https://wa.me/${S.cfg.whatsapp}?text=${encodeURIComponent(text)}`); };
+const saveCart = () => { try { localStorage.setItem('cart', JSON.stringify(S.cart)); } catch (e) {} const n = S.cart.reduce((a, c) => a + c.qty, 0); $('pill').textContent = '🛒 ' + n; };
 
-async function api(path, body) {
-  const res = await fetch(API + path, {
-    method: body ? 'POST' : 'GET',
-    headers: {'Content-Type':'application/json', 'X-Init-Data': tg?.initData || ''},
-    body: body ? JSON.stringify(body) : undefined
-  });
-  return await res.json();
+function show(v) {
+  S.view = v;
+  ['catalog','cart','orders','info','admin'].forEach(x => { $('v-' + x).classList.toggle('hide', x !== v); $('n-' + x).classList.toggle('on', x === v); });
+  if (v === 'cart') renderCart();
+  if (v === 'orders') loadMyOrders();
+  if (v === 'info') { $('i-pay').textContent = S.cfg.pay_text || ''; $('i-del').textContent = S.cfg.delivery_text || ''; }
+  if (v === 'admin') adminTab(S.atab);
+  window.scrollTo(0, 0);
 }
 
-async function initApp() {
-  try {
-    const me = await api('/api/me');
-    if (me.is_admin) $('nav-admin').classList.remove('hidden');
-  } catch(e) {}
-  loadCatalog();
+/* ───── Каталог ───── */
+function renderChips() {
+  $('chips').innerHTML = CATS.map(([k, n]) => `<button class="chip ${S.cat === k ? 'on' : ''}" onclick="S.cat='${k}';renderChips();renderCatalog()">${n}</button>`).join('');
 }
-
-async function loadCatalog() {
-  try {
-    allProducts = await api('/api/products');
-    renderProducts();
-  } catch(e) {}
+function renderCatalog() {
+  const q = S.q.trim().toLowerCase();
+  const list = S.products.filter(p => (S.cat === 'all' || p.category === S.cat) && (!q || (p.title + ' ' + p.brand).toLowerCase().includes(q)));
+  $('grid').innerHTML = list.map(p => {
+    const disc = p.old_price > p.price ? Math.round((1 - p.price / p.old_price) * 100) : 0;
+    return `<button class="pc" onclick="openProduct(${p.id})"><div class="ph"><img loading="lazy" src="${esc(p.image)}" alt="">${disc ? `<span class="tag">−${disc}%</span>` : ''}</div>
+      <div class="b"><div class="br">${esc(p.brand)}</div><div class="tt">${esc(p.title)}</div>
+      <span class="pr">${money(p.price)}</span>${disc ? `<span class="old">${money(p.old_price)}</span>` : ''}</div></button>`;
+  }).join('') || `<div class="empty" style="grid-column:1/-1">Ничего не найдено. Попробуйте другой запрос.</div>`;
 }
-
-function setCategory(cat) {
-  currentCategory = cat;
-  ['all','drops','lifestyle'].forEach(c => $(`cat-${c}`).classList.toggle('active', c === cat));
-  renderProducts();
+function openProduct(id) {
+  const p = S.products.find(x => x.id === id); if (!p) return;
+  const sel = S.picked[id];
+  $('sheet').innerHTML = `<button class="x" onclick="closeSheet()">✕</button>
+    <img class="big" src="${esc(p.image)}" alt="">
+    <div class="br">${esc(p.brand)}</div><h2 style="margin:2px 0 6px;font-size:20px">${esc(p.title)}</h2>
+    <div><span class="pr" style="font-size:20px">${money(p.price)}</span>${p.old_price > p.price ? `<span class="old">${money(p.old_price)}</span>` : ''}</div>
+    <p class="muted" style="margin-top:10px">${esc(p.description)}</p>
+    <label>Размер (EU)</label>
+    <div class="sizes">${p.sizes.map(s => `<button class="sz ${sel === s ? 'on' : ''}" onclick="S.picked[${id}]='${esc(s)}';openProduct(${id})">${esc(s)}</button>`).join('')}</div>
+    <button class="btn sig" onclick="addToCart(${id})">Добавить в корзину</button>`;
+  $('ov').classList.remove('hide');
 }
+function closeSheet() { $('ov').classList.add('hide'); }
 
-function renderProducts() {
-  const filtered = currentCategory === 'all' ? allProducts : allProducts.filter(p => p.category === currentCategory);
-  $('product-list').innerHTML = filtered.map(p => {
-    const currentSize = selectedSizes[p.id] || p.sizes[0];
-    return `
-      <div class="card p-3 space-y-2 flex flex-col justify-between">
-        <div>
-          <img src="${p.image}" class="w-full h-32 object-cover rounded-lg bg-zinc-900" alt="">
-          <span class="text-[9px] text-zinc-500 uppercase font-bold mt-2 block">${p.brand}</span>
-          <h4 class="font-bold text-xs line-clamp-1 text-zinc-200">${p.title}</h4>
-          <div class="flex items-center gap-2 mt-1">
-            <span class="text-xs font-black text-emerald-400">${p.price} сом</span>
-            ${p.old_price ? `<span class="text-[9px] text-zinc-600 line-through">${p.old_price}</span>` : ''}
-          </div>
-        </div>
-        <div class="space-y-2 pt-1">
-          <div class="flex flex-wrap gap-1">
-            ${p.sizes.map(s => `<button onclick="selectSize(${p.id}, '${s}')" class="size-btn ${currentSize === s ? 'selected' : ''}">${s}</button>`).join('')}
-          </div>
-          <button onclick='addToCart(${JSON.stringify(p)})' class="btn-accent w-full text-xs py-2 bg-zinc-800 text-white">В корзину</button>
-        </div>
-      </div>
-    `;
-  }).join('');
+/* ───── Корзина ───── */
+function addToCart(id) {
+  const p = S.products.find(x => x.id === id), size = S.picked[id];
+  if (!size) return toast('Сначала выберите размер');
+  const ex = S.cart.find(i => i.id === id && i.size === size);
+  if (ex) ex.qty = Math.min(10, ex.qty + 1); else S.cart.push({id, size, qty:1, title:p.title, price:p.price, image:p.image});
+  saveCart(); closeSheet(); tap(); toast('Добавлено в корзину');
 }
-
-function selectSize(productId, size) {
-  selectedSizes[productId] = size;
-  renderProducts();
+function changeQty(i, d) { S.cart[i].qty += d; if (S.cart[i].qty < 1) S.cart.splice(i, 1); if (S.cart[i]?.qty > 10) S.cart[i].qty = 10; saveCart(); renderCart(); }
+function renderCart() {
+  const empty = !S.cart.length;
+  $('checkout').classList.toggle('hide', empty);
+  $('cart-items').innerHTML = empty ? `<div class="empty">Корзина пуста.<br>Выберите пару в каталоге.</div>` : S.cart.map((i, k) => `
+    <div class="card row"><img class="thumb" src="${esc(i.image)}" alt=""><div style="flex:1;min-width:0">
+      <div style="font-weight:700;font-size:14px">${esc(i.title)}</div><div class="muted">Размер ${esc(i.size)} · ${money(i.price)}</div></div>
+      <div class="qty"><button onclick="changeQty(${k},-1)">−</button><span>${i.qty}</span><button onclick="changeQty(${k},1)">+</button></div></div>`).join('');
+  $('cart-total').textContent = money(S.cart.reduce((a, c) => a + c.price * c.qty, 0));
+  try { $('o-phone').value ||= localStorage.getItem('phone') || ''; $('o-addr').value ||= localStorage.getItem('addr') || ''; } catch (e) {}
 }
-
-function addToCart(product) {
-  const chosenSize = selectedSizes[product.id] || product.sizes[0];
-  const existing = cart.find(i => i.id === product.id && i.size === chosenSize);
-  if (existing) existing.qty += 1;
-  else cart.push({...product, qty: 1, size: chosenSize});
-  
-  $('cart-badge').textContent = `🛒 ${cart.reduce((a,c) => a + c.qty, 0)}`;
-  alert(`Добавлено (Размер: ${chosenSize})`);
-  updateCartUI();
-}
-
-function updateCartUI() {
-  if (cart.length === 0) {
-    $('cart-items').innerHTML = `<p class="text-zinc-500 text-sm">Ваша корзина пуста</p>`;
-    $('checkout-form').classList.add('hidden');
-    return;
-  }
-  $('cart-items').innerHTML = cart.map((i, idx) => `
-    <div class="card p-3 flex justify-between items-center text-xs">
-      <div>
-        <p class="font-bold text-zinc-200">${i.title}</p>
-        <p class="text-zinc-400">${i.price} сом | Размер: <b class="text-white">${i.size}</b> | Кол-во: ${i.qty}</p>
-      </div>
-      <button onclick="cart.splice(${idx},1);updateCartUI();" class="text-red-500 font-bold p-1">Удалить</button>
-    </div>
-  `).join('');
-  $('checkout-form').classList.remove('hidden');
-}
-
 async function submitOrder() {
-  const phone = $('order-phone').value;
-  const address = $('order-address').value;
-  if (!phone || !address) {
-    alert('Укажите телефон и адрес доставки!');
-    return;
-  }
-  const res = await api('/api/orders/create', {phone, address, items: cart});
-  if (res.success) {
-    alert(res.message);
-    cart = [];
-    $('cart-badge').textContent = '🛒 0';
-    updateCartUI();
-    switchTab('catalog');
-  } else alert('Ошибка оформления');
-}
-
-async function adminAddProduct() {
-  const title = $('adm-title').value;
-  const brand = $('adm-brand').value;
-  const price = $('adm-price').value;
-  const old_price = $('adm-old').value || 0;
-  const image = $('adm-img').value;
-  const category = $('adm-cat').value;
-  if(!title || !price || !image) {
-    alert('Заполните название, цену и картинку!');
-    return;
-  }
-  const res = await api('/api/admin/add_product', {title, brand, price, old_price, image, category, sizes: "40,41,42,43,44,45"});
-  if(res.success) {
-    alert(res.message);
-    loadCatalog();
-  }
-}
-
-async function loadAdminOrders() {
+  const phone = $('o-phone').value.trim(), address = $('o-addr').value.trim(), comment = $('o-comm').value.trim();
+  if (phone.replace(/\D/g, '').length < 9) return toast('Укажите номер телефона');
+  if (address.length < 5) return toast('Укажите адрес доставки');
+  $('o-btn').disabled = true;
   try {
-    const orders = await api('/api/admin/orders');
-    $('admin-orders-list').innerHTML = orders.map(o => `
-      <div class="card p-3 space-y-1">
-        <p class="font-bold text-white">Заказ #${o.id} — ${o.total} сом</p>
-        <p class="text-zinc-400">Клиент: ${o.username} | Тел: <b>${o.phone}</b></p>
-        <p class="text-zinc-400">Адрес: ${o.address}</p>
-        <p class="text-zinc-300 pt-1">Товары: ${o.summary}</p>
-        <p class="text-emerald-400 font-semibold pt-1">Статус: ${o.status}</p>
-      </div>
-    `).join('') || '<p class="text-zinc-500">Нет заказов</p>';
-  } catch(e) {}
+    const r = await api('/api/orders', {phone, address, comment, items: S.cart.map(i => ({id:i.id, size:i.size, qty:i.qty}))});
+    try { localStorage.setItem('phone', phone); localStorage.setItem('addr', address); } catch (e) {}
+    S.cart = []; saveCart(); renderCart(); showDone(r);
+  } catch (e) { toast(e.message); }
+  $('o-btn').disabled = false;
+}
+function showDone(r) {
+  $('sheet').innerHTML = `<div style="text-align:center;padding:10px 0"><div style="font-size:44px">✅</div><h2 style="margin:6px 0">Заказ #${r.id} принят</h2>
+    <div class="muted">Сумма: <b style="color:var(--ink)">${money(r.total)}</b></div></div>
+    <div class="card" style="margin-top:12px"><b>Что дальше</b><p class="muted" style="margin-top:6px">Менеджер напишет вам, подтвердит наличие и размер, затем пришлёт реквизиты оплаты.</p>
+    <p class="muted" style="margin-top:8px">${esc(S.cfg.pay_text)}</p>${S.cfg.qr ? `<img class="qr" src="${esc(S.cfg.qr)}" alt="QR для оплаты">` : ''}</div>
+    ${S.cfg.whatsapp ? `<button class="btn wa" onclick="openWA('Здравствуйте! Мой заказ #${r.id} на ${Math.round(r.total)} сом.')">Написать в WhatsApp</button><div style="height:8px"></div>` : ''}
+    <button class="btn ghost" onclick="closeSheet();show('orders')">Мои заказы</button>`;
+  $('ov').classList.remove('hide');
 }
 
-function switchTab(tab) {
-  ['catalog','cart','guarantee','admin'].forEach(t => $('tab-' + t).classList.toggle('hidden', t !== tab));
-  if(tab === 'admin') loadAdminOrders();
-  window.scrollTo(0,0);
+/* ───── Мои заказы ───── */
+const badge = s => { const [t, c] = STATUS[s] || [s, '#444']; return `<span class="badge" style="background:${c}">${t}</span>`; };
+const itemsHtml = it => it.map(i => `${esc(i.title)} — р.${esc(i.size)} × ${i.qty}`).join('<br>');
+async function loadMyOrders() {
+  const box = $('orders-list');
+  if (!S.authed) { box.innerHTML = `<div class="empty">Откройте магазин через Telegram-бота, чтобы видеть заказы.</div>`; return; }
+  try {
+    const list = await api('/api/my_orders');
+    box.innerHTML = list.map(o => `<div class="card"><div class="row sp"><b>Заказ #${o.id}</b>${badge(o.status)}</div>
+      <p class="muted" style="margin:8px 0">${itemsHtml(o.items)}</p><b>${money(o.total)}</b></div>`).join('') || `<div class="empty">Заказов пока нет.</div>`;
+  } catch (e) { box.innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
 }
 
-initApp();
+/* ───── Админка ───── */
+function adminTab(t) {
+  S.atab = t;
+  ['orders','products','settings'].forEach(x => $('at-' + x).classList.toggle('on', x === t));
+  ({orders: loadAdminOrders, products: loadAdminProducts, settings: renderSettings})[t]();
+}
+async function loadAdminOrders() {
+  const box = $('admin-body'); box.innerHTML = '<div class="empty">Загрузка…</div>';
+  try { S.aorders = await api('/api/admin/orders'); } catch (e) { box.innerHTML = `<div class="empty">${esc(e.message)}</div>`; return; }
+  const f = S.ofilter, list = S.aorders.filter(o => f === 'all' || o.status === f);
+  box.innerHTML = `<div class="chips" style="padding-top:0">${[['all','Все'], ...Object.entries(STATUS).map(([k, v]) => [k, v[0]])].map(([k, n]) => `<button class="chip ${f === k ? 'on' : ''}" onclick="S.ofilter='${k}';loadAdminOrders()">${n}</button>`).join('')}</div>` +
+    (list.map(o => `<div class="card"><div class="row sp"><b>Заказ #${o.id} · ${money(o.total)}</b>${badge(o.status)}</div>
+      <p class="muted" style="margin:8px 0">${itemsHtml(o.items)}</p>
+      <p style="font-size:13px">👤 ${esc(o.username)}<br>📞 <a href="tel:${esc(o.phone)}">${esc(o.phone)}</a><br>📍 ${esc(o.address)}${o.comment ? `<br>💬 ${esc(o.comment)}` : ''}<br><span class="muted">${new Date(o.created * 1000).toLocaleString('ru-RU')}</span></p>
+      <div class="row" style="flex-wrap:wrap;margin-top:10px">${Object.entries(STATUS).filter(([k]) => k !== o.status).map(([k, v]) => `<button class="btn sm ghost" onclick="setStatus(${o.id},'${k}')">${v[0]}</button>`).join('')}
+      ${o.wa ? `<button class="btn sm wa" onclick="openLink('https://wa.me/${o.wa}')">WhatsApp</button>` : ''}</div></div>`).join('') || '<div class="empty">Заказов нет.</div>');
+}
+async function setStatus(id, st) { try { await api(`/api/admin/orders/${id}/status`, {status: st}); toast('Статус обновлён'); loadAdminOrders(); } catch (e) { toast(e.message); } }
+
+async function loadAdminProducts() {
+  const box = $('admin-body'); box.innerHTML = '<div class="empty">Загрузка…</div>';
+  try { S.aprods = await api('/api/admin/products'); } catch (e) { box.innerHTML = `<div class="empty">${esc(e.message)}</div>`; return; }
+  box.innerHTML = `<button class="btn sig" onclick="productForm()">+ Добавить товар</button><div style="height:12px"></div>` + S.aprods.map(p => `
+    <div class="card"><div class="row"><img class="thumb" src="${esc(p.image)}" alt=""><div style="flex:1;min-width:0"><b style="font-size:14px">${esc(p.title)}</b>
+      <div class="muted">${money(p.price)} · ${p.active ? '✅ в каталоге' : '🚫 скрыт'}</div></div></div>
+      <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sm ghost" onclick="productForm(${p.id})">Изменить</button>
+      <button class="btn sm ghost" onclick="toggleProduct(${p.id})">${p.active ? 'Скрыть' : 'Показать'}</button>
+      <button class="btn sm ghost" style="color:#dc2626" onclick="delProduct(${p.id})">Удалить</button></div></div>`).join('');
+}
+async function toggleProduct(id) { const p = S.aprods.find(x => x.id === id); try { await api('/api/admin/products', {...p, active: !p.active}); await refreshCatalog(); loadAdminProducts(); } catch (e) { toast(e.message); } }
+async function delProduct(id) {
+  if (!confirm('Удалить товар навсегда?')) return;
+  try { await api('/api/admin/products/' + id, null, 'DELETE'); await refreshCatalog(); loadAdminProducts(); toast('Удалено'); } catch (e) { toast(e.message); }
+}
+async function refreshCatalog() { const d = await api('/api/init'); S.products = d.products; renderCatalog(); }
+
+function fileToJpeg(file, max) {
+  return new Promise((res, rej) => {
+    const r = new FileReader(), img = new Image();
+    r.onload = () => { img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+      res(c.toDataURL('image/jpeg', .82)); }; img.onerror = rej; img.src = r.result; };
+    r.onerror = rej; r.readAsDataURL(file);
+  });
+}
+async function pickPhoto(input, targetId, max) {
+  const f = input.files[0]; if (!f) return;
+  toast('Загружаю фото…');
+  try {
+    const {url} = await api('/api/admin/upload', {data: await fileToJpeg(f, max)});
+    $(targetId).value = url; const pv = $(targetId + '-pv'); if (pv) { pv.src = url; pv.classList.remove('hide'); } toast('Фото загружено');
+  } catch (e) { toast(e.message || 'Не удалось загрузить'); }
+}
+function productForm(id) {
+  const p = S.aprods.find(x => x.id === id) || {title:'', brand:'', price:'', old_price:'', image:'', sizes:['40','41','42','43','44'], category:'drops', description:'', active:true};
+  $('sheet').innerHTML = `<button class="x" onclick="closeSheet()">✕</button><h2>${id ? 'Изменить товар' : 'Новый товар'}</h2>
+    <label>Фото (из галереи телефона)</label><input type="file" accept="image/*" class="inp" onchange="pickPhoto(this,'f-image',900)">
+    <input type="hidden" id="f-image" value="${esc(p.image)}"><img id="f-image-pv" class="pv ${p.image ? '' : 'hide'}" src="${esc(p.image)}" alt="">
+    <label>Название</label><input id="f-title" class="inp" value="${esc(p.title)}" placeholder="Nike Dunk Low 'Panda'">
+    <label>Бренд</label><input id="f-brand" class="inp" value="${esc(p.brand)}" placeholder="Nike">
+    <div class="row"><div style="flex:1"><label>Цена, сом</label><input id="f-price" type="number" inputmode="numeric" class="inp" value="${p.price}"></div>
+    <div style="flex:1"><label>Старая цена</label><input id="f-old" type="number" inputmode="numeric" class="inp" value="${p.old_price || ''}"></div></div>
+    <label>Размеры через запятую</label><input id="f-sizes" class="inp" value="${esc(p.sizes.join(','))}">
+    <label>Категория</label><select id="f-cat" class="inp">${CATS.slice(1).map(([k, n]) => `<option value="${k}" ${p.category === k ? 'selected' : ''}>${n}</option>`).join('')}</select>
+    <label>Описание</label><textarea id="f-desc" class="inp">${esc(p.description)}</textarea>
+    <label class="row" style="margin:12px 0"><input type="checkbox" id="f-active" ${p.active ? 'checked' : ''}> Показывать в каталоге</label>
+    <button class="btn sig" onclick="saveProduct(${id || 0})">Сохранить</button>`;
+  $('ov').classList.remove('hide');
+}
+async function saveProduct(id) {
+  const body = {id: id || undefined, image: $('f-image').value, title: $('f-title').value, brand: $('f-brand').value, price: $('f-price').value, old_price: $('f-old').value, sizes: $('f-sizes').value, category: $('f-cat').value, description: $('f-desc').value, active: $('f-active').checked};
+  try { await api('/api/admin/products', body); closeSheet(); await refreshCatalog(); loadAdminProducts(); toast('Сохранено'); } catch (e) { toast(e.message); }
+}
+
+function renderSettings() {
+  const c = S.cfg;
+  $('admin-body').innerHTML = `<div class="card"><label style="margin-top:0">Название магазина</label><input id="s-name" class="inp" value="${esc(c.shop_name)}">
+    <label>Номер WhatsApp (996XXXXXXXXX)</label><input id="s-wa" class="inp" inputmode="numeric" value="${esc(c.whatsapp)}">
+    <label>Текст про оплату</label><textarea id="s-pay" class="inp">${esc(c.pay_text)}</textarea>
+    <label>Текст про доставку</label><textarea id="s-del" class="inp">${esc(c.delivery_text)}</textarea>
+    <label>QR-код для оплаты (скриншот из банка)</label><input type="file" accept="image/*" class="inp" onchange="pickPhoto(this,'s-qr',1000)">
+    <input type="hidden" id="s-qr" value="${esc(c.qr)}"><img id="s-qr-pv" class="pv ${c.qr ? '' : 'hide'}" src="${esc(c.qr)}" alt="">
+    ${c.qr ? `<button class="btn sm ghost" style="margin-top:8px" onclick="$('s-qr').value='';$('s-qr-pv').classList.add('hide')">Убрать QR</button>` : ''}</div>
+    <button class="btn sig" onclick="saveSettings()">Сохранить настройки</button>`;
+}
+async function saveSettings() {
+  try { S.cfg = await api('/api/admin/settings', {shop_name: $('s-name').value, whatsapp: $('s-wa').value, pay_text: $('s-pay').value, delivery_text: $('s-del').value, qr: $('s-qr').value}); $('shopname').textContent = S.cfg.shop_name; toast('Настройки сохранены'); } catch (e) { toast(e.message); }
+}
+
+/* ───── Запуск ───── */
+(async function () {
+  renderChips(); saveCart();
+  $('grid').innerHTML = '<div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div>';
+  try {
+    const d = await api('/api/init');
+    S.cfg = d.cfg; S.products = d.products; S.authed = d.authed; S.admin = d.is_admin;
+    $('shopname').textContent = S.cfg.shop_name; document.title = S.cfg.shop_name;
+    if (S.admin) $('n-admin').classList.remove('hide');
+  } catch (e) { toast('Нет соединения с сервером'); }
+  renderCatalog(); show('catalog');
+})();
 </script>
 </body>
 </html>
